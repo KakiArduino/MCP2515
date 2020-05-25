@@ -23,21 +23,20 @@ void setup() {
 
 void loop() {
  
- //Vetores para armazenar os ID's recebidos
-  uint32_t ID0[1], ID1[1]; 
-  
   //Vetores para os 8 bytes recebidos, + um para o comprimento em bytes
-  uint8_t BX0[9], BX1[9];   
+  uint8_t BX0[13], BX1[13];   
 
   //Verifica se ha nova mensagem, caso tenha salva
-  mcp.readDATA(ID0, BX0, ID1, BX1);
+  mcp.readDATA(BX0, BX1);
 
   //Se dado tiver sido recebido em TB0 imprime
   if (BX0[0] > 0){
-    Serial.print(ID0[0], HEX);
-    Serial.print(": ");
-    for(uint8_t i=0; i < BX0[0]+1; i++){
+    for(uint8_t i=0; i < 4; i++){
       Serial.print(BX0[i], HEX);
+    }
+    Serial.print(": ");
+    for(uint8_t i=0; i < BX0[4]+1; i++){
+      Serial.print(BX0[i+4], HEX);
       Serial.print(' ');
     }
     Serial.println();   
@@ -45,14 +44,15 @@ void loop() {
   
   //Se dado tiver sido recebido em TB0 imprime
   if(BX1[0] > 0){
-    Serial.print(ID1[0], HEX);
+    for(uint8_t i=0; i < 4; i++){
+      Serial.print(BX1[i], HEX);
+    }
     Serial.print(": ");
-    for( uint8_t i=0; i < BX1[0]+1; i++){
-      Serial.print( BX1[i], HEX);
+    for( uint8_t i=0; i < BX1[4]+1; i++){
+      Serial.print( BX1[i+4], HEX);
       Serial.print(' ');
     }
     Serial.println();
   }
-  
 
 }
