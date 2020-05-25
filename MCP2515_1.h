@@ -50,7 +50,7 @@ private:
      MCP2515(uint32_t ID, uint8_t clk2515, uint8_t cs = 10, unsigned long int speed = 10000000, uint8_t mode = 0);
      
      void reset(); // instrucao reset 0xC0
-	 
+     
      void read(uint8_t REG, uint8_t *data, uint8_t n = 1);
      
      uint8_t regCheck(uint8_t REG, uint8_t VAL, uint8_t extraMask = 0xFF);  
@@ -70,7 +70,7 @@ private:
      void status(uint8_t *status);
 
      void writeID(uint32_t ID, uint8_t TXBUFF = 3, uint8_t CHECK = 1);
-	 
+     
      void loadTX(uint8_t *data, uint8_t n = 8,  uint8_t abc = 1);
      
      void writeDATA(uint8_t n, uint8_t *data, uint8_t TXB = 0,uint8_t CHECK = 1);
@@ -78,10 +78,10 @@ private:
      void send(uint8_t TXbuff = 0x01);
 
      uint8_t checkDATA();
-     
-     void readID(uint32_t *IDIN, uint8_t RXB = 0);
 
-     void readDATA(uint32_t *IDIN0, uint8_t *DATAIN0, uint32_t *IDIN1, uint8_t *DATAIN1);
+     void readID(uint8_t *ID, uint8_t RXB = 0);
+
+     void readDATA(uint8_t *RXB0, uint8_t *RXB1);
      
 };
 

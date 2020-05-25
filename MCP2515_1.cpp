@@ -27,6 +27,7 @@ void MCP2515::digaOi(String S = "Ola"){
    
 }
 
+
 //Construtor
 MCP2515::MCP2515(uint32_t ID, uint8_t clk2515, uint8_t cs = 10, unsigned long int speed = 10000000, uint8_t mode = 0){
 /* Descricao do construtor...   
@@ -81,6 +82,7 @@ MCP2515::MCP2515(uint32_t ID, uint8_t clk2515, uint8_t cs = 10, unsigned long in
   
 }
 
+
 //Funcao inicializacao do SPI
 void MCP2515::start(){
 /* Descricao da funcao start()...
@@ -90,6 +92,7 @@ void MCP2515::start(){
   digitalWrite(CS, LOW);
 }
 
+
 //Funcao de finalizacao do SPI
 void MCP2515::end() {
  /* Descricao da funcao end()...
@@ -98,6 +101,7 @@ void MCP2515::end() {
     digitalWrite(CS, HIGH);
     SPI.endTransaction();
 }
+
 
 //Funcao Reset
 void MCP2515::reset(){
@@ -116,6 +120,7 @@ void MCP2515::reset(){
     end();
     delayMicroseconds(10);
 }
+
 
 //Funcao de leitura de registros 
 void MCP2515::read(uint8_t REG, uint8_t *data, uint8_t n = 1){
@@ -157,6 +162,7 @@ void MCP2515::read(uint8_t REG, uint8_t *data, uint8_t n = 1){
     return;
 
 }
+
 
 //Funcao de verificacao de valores salvos em registros
 uint8_t MCP2515::regCheck(uint8_t REG, uint8_t VAL, uint8_t extraMask = 0xFF){
@@ -262,319 +268,6 @@ uint8_t MCP2515::regCheck(uint8_t REG, uint8_t VAL, uint8_t extraMask = 0xFF){
 	return erro;
 }
 
-/* Opcional no lugar da de cima, mais lenta e ocupa mais bytes
-uint8_t MCP2515::regCheck(uint8_t REG, uint8_t VAL, uint8_t data){
-	
-	/* mapa de mascaras para check de escritra, por map, mas num deu
-	map<uint8_t, uint8_t> checkMasks;
-	//CheckMasks Buff's saida										  Bit register			
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x30, 0x0B)); // 0 0 1 1  0 0 0 0
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x40, 0x0B)); // 0 1 0 0  0 0 0 0
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x50, 0x0B)); // 0 1 0 1  0 0 0 0
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x0D, 0x07)); // 0 0 0 0  1 1 0 1
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x31, 0xFF)); // 0 0 1 1  0 0 0 1
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x41, 0xFF)); // 0 1 0 0  0 0 0 1
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x51, 0xFF)); // 0 1 0 1  0 0 0 1
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x32, 0xEB)); // 0 0 1 1  0 0 1 0
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x42, 0xEB)); // 0 1 0 0  0 0 1 0
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x52, 0xEB)); // 0 1 0 1  0 0 1 0
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x33, 0xFF)); // 0 0 1 1  0 0 1 1
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x43, 0xFF)); // 0 1 0 0  0 0 1 1
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x53, 0xFF)); // 0 1 0 1  0 0 1 1
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x34, 0xFF)); // 0 0 1 1  0 1 0 0
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x44, 0xFF)); // 0 1 0 0  0 1 0 0
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x54, 0xFF)); // 0 1 0 1  0 1 0 0
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x35, 0x04)); // 0 0 1 1  0 1 0 1
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x45, 0x04)); // 0 1 0 0  0 1 0 1
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x55, 0x04)); // 0 1 0 1  0 1 0 1
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x36, 0xFF)); // 0 0 1 1  0 1 1 0
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x46, 0xFF)); // 0 1 0 0  0 1 1 0
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x56, 0xFF)); // 0 1 0 1  0 1 1 0
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x37, 0xFF)); // 0 0 1 1  0 1 1 1
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x47, 0xFF)); // 0 1 0 0  0 1 1 1
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x57, 0xFF)); // 0 1 0 1  0 1 1 1
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x38, 0xFF)); // 0 0 1 1  1 0 0 0
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x48, 0xFF)); // 0 1 0 0  1 0 0 0
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x58, 0xFF)); // 0 1 0 1  1 0 0 0
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x39, 0xFF)); // 0 0 1 1  1 0 0 1
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x49, 0xFF)); // 0 1 0 0  1 0 0 1
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x59, 0xFF)); // 0 1 0 1  1 0 0 1
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x3A, 0xFF)); // 0 0 1 1  1 0 1 0
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x4A, 0xFF)); // 0 1 0 0  1 0 1 0
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x5A, 0xFF)); // 0 1 0 1  1 0 1 0
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x3B, 0xFF)); // 0 0 1 1  1 0 1 1
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x4B, 0xFF)); // 0 1 0 0  1 0 1 1
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x5B, 0xFF)); // 0 1 0 1  1 0 1 1
- 	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x3C, 0xFF)); // 0 0 1 1  1 1 0 0
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x4C, 0xFF)); // 0 1 0 0  1 1 0 0
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x5C, 0xFF)); // 0 1 0 1  1 1 0 0
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x3D, 0xFF)); // 0 0 1 1  1 1 0 1
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x4D, 0xFF)); // 0 1 0 0  1 1 0 1
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x5D, 0xFF)); // 0 1 0 1  1 1 0 1
-	//checkMasks Buff's de entrada
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x60, 0x64)); // 0 1 1 0  0 0 0 0
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x70, 0x60)); // 0 1 1 1  0 0 0 0
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x0C, 0x3F)); // 1 1 0 0  0 0 0 0	 
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x61, 0x00)); // 0 1 1 0  0 0 0 1
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x71, 0x00)); // 0 1 1 1  0 0 0 1
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x62, 0x00)); // 0 1 1 0  0 0 1 0
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x72, 0x00)); // 0 1 1 1  0 0 1 0
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x63, 0x00)); // 0 1 1 0  0 0 1 1
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x73, 0x00)); // 0 1 1 1  0 0 1 1
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x64, 0x00)); // 0 1 1 0  0 1 0 0
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x74, 0x00)); // 0 1 1 1  0 1 0 0
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x65, 0x00)); // 0 1 1 0  0 1 0 1
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x75, 0x00)); // 0 1 1 1  0 1 0 1
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x66, 0x00)); // 0 1 1 0  0 1 1 0
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x76, 0x00)); // 0 1 1 1  0 1 1 0
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x67, 0x00)); // 0 1 1 0  0 1 1 1
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x77, 0x00)); // 0 1 1 1  0 1 1 1
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x68, 0x00)); // 0 1 1 0  1 0 0 0
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x78, 0x00)); // 0 1 1 1  1 0 0 0
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x69, 0x00)); // 0 1 1 0  1 0 0 1
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x79, 0x00)); // 0 1 1 1  1 0 0 1
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x6A, 0x00)); // 0 1 1 0  1 0 1 0
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x7A, 0x00)); // 0 1 1 1  1 0 1 0
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x6B, 0x00)); // 0 1 1 0  1 0 1 1
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x7B, 0x00)); // 0 1 1 1  1 0 1 1
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x6C, 0x00)); // 0 1 1 0  1 1 0 0
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x7C, 0x00)); // 0 1 1 1  1 1 0 0
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x6D, 0x00)); // 0 1 1 0  1 1 0 1
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x7D, 0x00)); // 0 1 1 1  1 1 0 1
-	//checkMasks filtros
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x00, 0xFF)); // 0 0 0 0  0 0 0 0
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x04, 0xFF)); // 0 0 0 0  0 1 0 0
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x08, 0xFF)); // 0 0 0 0  1 0 0 0
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x10, 0xFF)); // 0 0 0 1  0 0 0 0
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x14, 0xFF)); // 0 0 0 1  0 1 0 0
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x18, 0xFF)); // 0 0 0 1  1 0 0 0
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x01, 0xEB)); // 0 0 0 0  0 0 0 1
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x05, 0xEB)); // 0 0 0 0  0 1 0 1
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x09, 0xEB)); // 0 0 0 0  1 0 0 1
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x11, 0xEB)); // 0 0 0 1  0 0 0 1
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x15, 0xEB)); // 0 0 0 1  0 1 0 1
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x19, 0xEB)); // 0 0 0 1  1 0 0 1
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x02, 0xFF)); // 0 0 0 0  0 0 1 1
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x06, 0xFF)); // 0 0 0 0  0 1 1 0
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x0A, 0xFF)); // 0 0 0 0  1 0 1 0
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x12, 0xFF)); // 0 0 0 1  0 0 1 0
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x16, 0xFF)); // 0 0 0 1  0 1 1 0
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x1A, 0xFF)); // 0 0 0 1  1 0 1 0
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x03, 0xFF)); // 0 0 0 0  0 0 1 1
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x07, 0xFF)); // 0 0 0 0  0 1 1 1
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x0B, 0xFF)); // 0 0 0 0  1 0 1 1
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x13, 0xFF)); // 0 0 0 1  0 0 1 1
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x17, 0xFF)); // 0 0 0 1  0 1 1 1
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x1B, 0xFF)); // 0 0 0 1  1 0 1 1
-	//checkMasks mascaras
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x20, 0xFF)); // 0 0 1 0  0 0 0 0
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x24, 0xFF)); // 0 0 1 0  0 1 0 0
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x21, 0xE3)); // 0 0 1 0  0 0 0 1
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x25, 0xE3)); // 0 0 1 0  0 1 0 1
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x22, 0xFF)); // 0 0 1 0  0 0 1 0
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x26, 0xFF)); // 0 0 1 0  0 1 1 0
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x23, 0xFF)); // 0 0 1 0  0 0 1 1
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x27, 0xFF)); // 0 0 1 0  0 1 1 1
-	//checkMasks configuracao
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x2A, 0xFF)); // 0 0 1 0  1 0 1 0
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x29, 0xFF)); // 0 0 1 0  1 0 0 1
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x28, 0xC7)); // 0 0 1 0  1 0 0 0
-	//checkMasks logger de erro
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x1C, 0x00)); // 0 0 0 1  1 1 0 0
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x1D, 0x00)); // 0 0 0 1  1 1 0 1
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x2D, 0xC0)); // 0 0 1 0  1 1 0 1
-	//checkMasks interrupcoes
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x2B, 0xFF)); // 0 0 1 0  1 0 1 1
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0x2C, 0xFF)); // 0 0 1 0  1 1 0 0
-	//checkMasks controle
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0xFF, 0xFF)); // 1 1 1 1  1 1 1 1
-	checkMasks.insert (std::pair<uint8_t, uint8_t>(0xEE, 0x00)); // 1 1 1 0  1 1 1 0
-	*
-	
-  uint8_t checkMaskMap [145][2];
-  
-  //CheckMasks Buff's saida
-  checkMaskMap[0][0] = 0x30;  checkMaskMap[0][1] = 0x0B;
-  checkMaskMap[1][0] = 0x40;  checkMaskMap[1][1] = 0x0B;
-  checkMaskMap[2][0] = 0x50;  checkMaskMap[2][1] = 0x0B;
-  checkMaskMap[3][0] = 0x0D;  checkMaskMap[3][1] = 0x07;
-  checkMaskMap[4][0] = 0x31;  checkMaskMap[4][1] = 0xFF;
-  checkMaskMap[5][0] = 0x41;  checkMaskMap[5][1] = 0xFF;
-  checkMaskMap[6][0] = 0x51;  checkMaskMap[6][1] = 0xFF;
-  checkMaskMap[7][0] = 0x32;  checkMaskMap[7][1] = 0xEB;
-  checkMaskMap[8][0] = 0x42;  checkMaskMap[8][1] = 0xEB;
-  checkMaskMap[9][0] = 0x52;  checkMaskMap[9][1] = 0xEB;
-  checkMaskMap[10][0] = 0x33;  checkMaskMap[10][1] = 0xFF;
-  checkMaskMap[11][0] = 0x34;  checkMaskMap[11][1] = 0xFF;
-  checkMaskMap[12][0] = 0x35;  checkMaskMap[12][1] = 0xFF;
-  checkMaskMap[13][0] = 0x36;  checkMaskMap[13][1] = 0xFF;
-  checkMaskMap[14][0] = 0x37;  checkMaskMap[14][1] = 0xFF;
-  checkMaskMap[15][0] = 0x38;  checkMaskMap[15][1] = 0xFF;
-  checkMaskMap[16][0] = 0x39;  checkMaskMap[16][1] = 0xFF;
-  checkMaskMap[17][0] = 0x3A;  checkMaskMap[17][1] = 0xFF;
-  checkMaskMap[18][0] = 0x3B;  checkMaskMap[18][1] = 0xFF;
-  checkMaskMap[19][0] = 0x3C;  checkMaskMap[19][1] = 0xFF;
-  checkMaskMap[20][0] = 0x3D;  checkMaskMap[20][1] = 0xFF;
-  checkMaskMap[21][0] = 0x43;  checkMaskMap[21][1] = 0xFF;
-  checkMaskMap[22][0] = 0x44;  checkMaskMap[22][1] = 0xFF;
-  checkMaskMap[23][0] = 0x45;  checkMaskMap[23][1] = 0xFF;
-  checkMaskMap[24][0] = 0x46;  checkMaskMap[24][1] = 0xFF;
-  checkMaskMap[25][0] = 0x47;  checkMaskMap[25][1] = 0xFF;
-  checkMaskMap[26][0] = 0x48;  checkMaskMap[26][1] = 0xFF;
-  checkMaskMap[27][0] = 0x49;  checkMaskMap[27][1] = 0xFF;
-  checkMaskMap[28][0] = 0x4A;  checkMaskMap[28][1] = 0xFF;
-  checkMaskMap[29][0] = 0x4B;  checkMaskMap[29][1] = 0xFF;
-  checkMaskMap[30][0] = 0x4C;  checkMaskMap[30][1] = 0xFF;
-  checkMaskMap[31][0] = 0x4D;  checkMaskMap[31][1] = 0xFF;
-  checkMaskMap[32][0] = 0x50;  checkMaskMap[32][1] = 0xFF;
-  checkMaskMap[33][0] = 0x53;  checkMaskMap[33][1] = 0xFF;
-  checkMaskMap[34][0] = 0x54;  checkMaskMap[34][1] = 0xFF;
-  checkMaskMap[35][0] = 0x55;  checkMaskMap[35][1] = 0xFF;
-  checkMaskMap[36][0] = 0x56;  checkMaskMap[36][1] = 0xFF;
-  checkMaskMap[37][0] = 0x57;  checkMaskMap[37][1] = 0xFF;
-  checkMaskMap[38][0] = 0x58;  checkMaskMap[38][1] = 0xFF;
-  checkMaskMap[39][0] = 0x59;  checkMaskMap[39][1] = 0xFF;
-  checkMaskMap[40][0] = 0x5A;  checkMaskMap[40][1] = 0xFF;
-  checkMaskMap[41][0] = 0x5B;  checkMaskMap[41][1] = 0xFF;
-  checkMaskMap[42][0] = 0x5C;  checkMaskMap[42][1] = 0xFF;
-  checkMaskMap[43][0] = 0x5D;  checkMaskMap[43][1] = 0xFF;
-
-  //checkMasks Buff's de entrada
-  checkMaskMap[44][0] = 0x60;  checkMaskMap[44][1] = 0x64;
-  checkMaskMap[45][0] = 0x70;  checkMaskMap[45][1] = 0x60;
-  checkMaskMap[46][0] = 0x0C;  checkMaskMap[46][1] = 0x3F;
-  checkMaskMap[47][0] = 0x61;  checkMaskMap[47][1] = 0x00;
-  checkMaskMap[48][0] = 0x62;  checkMaskMap[48][1] = 0x00;
-  checkMaskMap[49][0] = 0x63;  checkMaskMap[49][1] = 0x00;
-  checkMaskMap[50][0] = 0x64;  checkMaskMap[50][1] = 0x00;
-  checkMaskMap[51][0] = 0x65;  checkMaskMap[51][1] = 0x00;
-  checkMaskMap[52][0] = 0x66;  checkMaskMap[52][1] = 0x00;
-  checkMaskMap[53][0] = 0x67;  checkMaskMap[53][1] = 0x00;
-  checkMaskMap[54][0] = 0x68;  checkMaskMap[54][1] = 0x00;
-  checkMaskMap[55][0] = 0x69;  checkMaskMap[55][1] = 0x00;
-  checkMaskMap[56][0] = 0x6A;  checkMaskMap[56][1] = 0x00;
-  checkMaskMap[57][0] = 0x6B;  checkMaskMap[57][1] = 0x00;
-  checkMaskMap[58][0] = 0x6C;  checkMaskMap[58][1] = 0x00;
-  checkMaskMap[59][0] = 0x6D;  checkMaskMap[59][1] = 0x00;
-  checkMaskMap[60][0] = 0x71;  checkMaskMap[60][1] = 0x00;
-  checkMaskMap[61][0] = 0x72;  checkMaskMap[61][1] = 0x00;
-  checkMaskMap[62][0] = 0x73;  checkMaskMap[62][1] = 0x00;
-  checkMaskMap[63][0] = 0x74;  checkMaskMap[63][1] = 0x00;
-  checkMaskMap[64][0] = 0x75;  checkMaskMap[64][1] = 0x00;
-  checkMaskMap[65][0] = 0x76;  checkMaskMap[65][1] = 0x00;
-  checkMaskMap[66][0] = 0x77;  checkMaskMap[66][1] = 0x00;
-  checkMaskMap[67][0] = 0x78;  checkMaskMap[67][1] = 0x00;
-  checkMaskMap[68][0] = 0x79;  checkMaskMap[68][1] = 0x00;
-  checkMaskMap[69][0] = 0x7A;  checkMaskMap[69][1] = 0x00;
-  checkMaskMap[70][0] = 0x7B;  checkMaskMap[70][1] = 0x00;
-  checkMaskMap[71][0] = 0x7C;  checkMaskMap[71][1] = 0x00;
-  checkMaskMap[72][0] = 0x7D;  checkMaskMap[72][1] = 0x00;
-
-  //checkMasks filtros
-  checkMaskMap[73][0] = 0x00;  checkMaskMap[73][1] = 0xFF;
-  checkMaskMap[74][0] = 0x04;  checkMaskMap[74][1] = 0xFF;
-  checkMaskMap[75][0] = 0x08;  checkMaskMap[75][1] = 0xFF;
-  checkMaskMap[76][0] = 0x10;  checkMaskMap[76][1] = 0xFF;
-  checkMaskMap[77][0] = 0x14;  checkMaskMap[77][1] = 0xFF;
-  checkMaskMap[78][0] = 0x18;  checkMaskMap[78][1] = 0xFF;
-  checkMaskMap[79][0] = 0x01;  checkMaskMap[79][1] = 0xEB;
-  checkMaskMap[80][0] = 0x05;  checkMaskMap[80][1] = 0xEB;
-  checkMaskMap[81][0] = 0x09;  checkMaskMap[81][1] = 0xEB;
-  checkMaskMap[82][0] = 0x11;  checkMaskMap[82][1] = 0xEB;
-  checkMaskMap[83][0] = 0x15;  checkMaskMap[83][1] = 0xEB;
-  checkMaskMap[84][0] = 0x19;  checkMaskMap[84][1] = 0xEB;
-  checkMaskMap[85][0] = 0x02;  checkMaskMap[85][1] = 0xFF;
-  checkMaskMap[86][0] = 0x06;  checkMaskMap[86][1] = 0xFF;
-  checkMaskMap[87][0] = 0x0A;  checkMaskMap[87][1] = 0xFF;
-  checkMaskMap[88][0] = 0x12;  checkMaskMap[88][1] = 0xFF;
-  checkMaskMap[89][0] = 0x16;  checkMaskMap[89][1] = 0xFF;
-  checkMaskMap[90][0] = 0x1A;  checkMaskMap[90][1] = 0xFF;
-  checkMaskMap[91][0] = 0x03;  checkMaskMap[91][1] = 0xFF;
-  checkMaskMap[92][0] = 0x07;  checkMaskMap[92][1] = 0xFF;
-  checkMaskMap[93][0] = 0x0B;  checkMaskMap[93][1] = 0xFF;
-  checkMaskMap[94][0] = 0x13;  checkMaskMap[94][1] = 0xFF;
-  checkMaskMap[95][0] = 0x17;  checkMaskMap[95][1] = 0xFF;
-  checkMaskMap[96][0] = 0x1B;  checkMaskMap[96][1] = 0xFF;
-
-  //checkMasks mascaras
-  checkMaskMap[97][0] = 0x20;  checkMaskMap[97][1] = 0xFF;
-  checkMaskMap[98][0] = 0x24;  checkMaskMap[98][1] = 0xFF;
-  checkMaskMap[99][0] = 0x21;  checkMaskMap[99][1] = 0xE3;
-  checkMaskMap[100][0] = 0x25;  checkMaskMap[100][1] = 0xE3;
-  checkMaskMap[101][0] = 0x22;  checkMaskMap[101][1] = 0xFF;
-  checkMaskMap[102][0] = 0x26;  checkMaskMap[102][1] = 0xFF;
-  checkMaskMap[103][0] = 0x23;  checkMaskMap[103][1] = 0xFF;
-  checkMaskMap[104][0] = 0x27;  checkMaskMap[104][1] = 0xFF;
-
-  //checkMasks configuracao
-  checkMaskMap[105][0] = 0x2A;  checkMaskMap[105][1] = 0xFF;
-  checkMaskMap[106][0] = 0x29;  checkMaskMap[106][1] = 0xFF;
-  checkMaskMap[107][0] = 0x28;  checkMaskMap[107][1] = 0xC7;
-
-  //checkMasks logger de erro
-  checkMaskMap[108][0] = 0x1C;  checkMaskMap[108][1] = 0x00;
-  checkMaskMap[109][0] = 0x1D;  checkMaskMap[109][1] = 0x00;
-  checkMaskMap[110][0] = 0x2D;  checkMaskMap[110][1] = 0xC0;
-  
-  //checkMasks interrupcoes
-  checkMaskMap[111][0] = 0x2B;  checkMaskMap[111][1] = 0xFF;
-  checkMaskMap[112][0] = 0x2C;  checkMaskMap[112][1] = 0xFF;
-
-  //checkMasks controle
-  checkMaskMap[113][0] = 0x0F;  checkMaskMap[113][1] = 0xFF;
-  checkMaskMap[114][0] = 0x1F;  checkMaskMap[114][1] = 0xFF;
-  checkMaskMap[115][0] = 0x2F;  checkMaskMap[115][1] = 0xFF;
-  checkMaskMap[116][0] = 0x3F;  checkMaskMap[116][1] = 0xFF;
-  checkMaskMap[117][0] = 0x4F;  checkMaskMap[117][1] = 0xFF;
-  checkMaskMap[118][0] = 0x5F;  checkMaskMap[118][1] = 0xFF;
-  checkMaskMap[119][0] = 0x6F;  checkMaskMap[119][1] = 0xFF;
-  checkMaskMap[120][0] = 0x7F;  checkMaskMap[120][1] = 0xFF;
-  checkMaskMap[121][0] = 0x8F;  checkMaskMap[121][1] = 0xFF;
-  checkMaskMap[122][0] = 0x9F;  checkMaskMap[122][1] = 0xFF;
-  checkMaskMap[123][0] = 0xAF;  checkMaskMap[123][1] = 0xFF;
-  checkMaskMap[124][0] = 0xBF;  checkMaskMap[124][1] = 0xFF;
-  checkMaskMap[125][0] = 0xCF;  checkMaskMap[125][1] = 0xFF;
-  checkMaskMap[126][0] = 0xDF;  checkMaskMap[126][1] = 0xFF;
-  checkMaskMap[127][0] = 0xEF;  checkMaskMap[127][1] = 0xFF;
-  checkMaskMap[128][0] = 0xFF;  checkMaskMap[128][1] = 0xFF;
-  checkMaskMap[129][0] = 0x0E;  checkMaskMap[129][1] = 0x00;
-  checkMaskMap[130][0] = 0x1E;  checkMaskMap[130][1] = 0x00;
-  checkMaskMap[131][0] = 0x2E;  checkMaskMap[131][1] = 0x00;
-  checkMaskMap[132][0] = 0x3E;  checkMaskMap[132][1] = 0x00;
-  checkMaskMap[133][0] = 0x4E;  checkMaskMap[133][1] = 0x00;
-  checkMaskMap[134][0] = 0x5E;  checkMaskMap[134][1] = 0x00;
-  checkMaskMap[135][0] = 0x6E;  checkMaskMap[135][1] = 0x00;
-  checkMaskMap[136][0] = 0x7E;  checkMaskMap[136][1] = 0x00;
-  checkMaskMap[137][0] = 0x8E;  checkMaskMap[137][1] = 0x00;
-  checkMaskMap[138][0] = 0x9E;  checkMaskMap[138][1] = 0x00;
-  checkMaskMap[139][0] = 0xAE;  checkMaskMap[139][1] = 0x00;
-  checkMaskMap[140][0] = 0xBE;  checkMaskMap[140][1] = 0x00;
-  checkMaskMap[141][0] = 0xCE;  checkMaskMap[141][1] = 0x00;
-  checkMaskMap[142][0] = 0xDE;  checkMaskMap[142][1] = 0x00;
-  checkMaskMap[143][0] = 0xEE;  checkMaskMap[143][1] = 0x00;
-  checkMaskMap[144][0] = 0xFE;  checkMaskMap[144][1] = 0x00;
-	
-	uint8_t erro = 0;
-	
-	volatile uint8_t *data;
-    read(REG, data);
-	
-	for (uint8_t i = 0; i <sizeof(checkMaskMap)/sizeof(checkMaskMap[0]); i++){
-		if (checkMaskMap[i][0] == REG){
-			if(checkMaskMap[i][1] == 0x00){
-				erro = 2;
-				return erro;
-			}
-			
-			if((*data & checkMaskMap[i][1]) != (VAL & checkMaskMap[i][1])){
-				erro = 1;
-				return erro;
-			}
-			return erro;
-		}
-	}
-	//return erro;
-}*/
 
 //Funcao de escrita em registros
 void MCP2515::write(uint8_t REG, uint8_t VAL, uint8_t CHECK = 0){
@@ -620,6 +313,7 @@ void MCP2515::write(uint8_t REG, uint8_t VAL, uint8_t CHECK = 0){
     }
 	return;
 }
+
 
 //Funcao para modificacao de bits em registros
 void MCP2515::bitModify(uint8_t REG, uint8_t MASK, uint8_t VAL, uint8_t CHECK = 0){
@@ -680,24 +374,25 @@ void MCP2515::bitModify(uint8_t REG, uint8_t MASK, uint8_t VAL, uint8_t CHECK = 
 	return;
 }
 
+
 //configuracoes
 void MCP2515::confRX(uint8_t RXB0 = 0x64, uint8_t RXB1 = 0x60){
 
-  //if (rxb0 != RXB0){
-  //rxb0 = RXB0;
+    //if (rxb0 != RXB0){
+    //rxb0 = RXB0;
     write(0x60, RXB0, 1);// Verificação falahndo!	RXB0
     if(erroLog == "Erro na escrita"){
       return;
     }
-  //}
+    
   
-  //if (rxb1 != RXB1){
+    //if (rxb1 != RXB1){
     //rxb1 = RXB1;  
     write(0x70, RXB1, 1);
     if(erroLog == "Erro na escrita"){
       return;
     }
-  //}
+    
   
 }
 
@@ -808,7 +503,7 @@ void MCP2515::conf(uint8_t OPMODE=0x00, uint16_t CANbds=500, uint8_t RESET=1){
     CANBDS = CANbds;
     switch(CLK2515){
       case 8 :
-	switch(CANBDS){
+		switch(CANBDS){
 	    case 1000 :
 	      write(0x2A, 0x00, 1);				
 	      if(erroLog == "Erro na escrita"){
@@ -1023,10 +718,10 @@ void MCP2515::conf(uint8_t OPMODE=0x00, uint16_t CANbds=500, uint8_t RESET=1){
 	    default:
 	      erroLog = "Conf e2";
 	  };
-	break;
-/*	
+		break;
+
       case 16 :
-	switch(CANbds){
+		switch(CANbds){
 			
 				case 1000 :
 					write(0x2A, 0x00, 1);				
@@ -1227,10 +922,10 @@ void MCP2515::conf(uint8_t OPMODE=0x00, uint16_t CANbds=500, uint8_t RESET=1){
 				default:
 				erroLog = "Conf e2";			
 			};
-	break;
+		break;
 	
       case 20 :
-	switch(CANbds){
+		switch(CANbds){
 			
 				case 1000 :
 					write(0x2A, 0x00, 1);				
@@ -1389,13 +1084,12 @@ void MCP2515::conf(uint8_t OPMODE=0x00, uint16_t CANbds=500, uint8_t RESET=1){
 				default:
 				erroLog = "Conf e2";
 			};
-	break;
-*/	
+		break;
+
       default:
-			erroLog = "Clock inva";
+		erroLog = "Clock inva";
     };
-  //}
-	
+  
 	
   //setando o modo de operacao OPMODE
   write(0x0F, OPMODE, 1);
@@ -1421,6 +1115,7 @@ void MCP2515::status(uint8_t *status){
   status[0] = SPI.transfer(0x00);
   end();
 }
+
 
 //Escrita
 void MCP2515::writeID(uint32_t ID, uint8_t TXBUFF = 3, uint8_t CHECK = 1){
@@ -1794,6 +1489,7 @@ void MCP2515::send(uint8_t TXbuff = 0x01){
   end();
 }
 
+
 //Leitura
 uint8_t MCP2515::checkDATA(){
   
@@ -1830,136 +1526,184 @@ uint8_t MCP2515::checkDATA(){
   return;
 }
 
-void MCP2515::readID(uint32_t *IDIN, uint8_t RXB = 0){
 
-  uint8_t lsb, msb;
-  uint8_t SID[2];
-  uint32_t idin = 0;
+void MCP2515::readID(uint8_t *ID, uint8_t RXB = 0){
+
+
+  ID[0] = 0;
+  ID[1] = 0;
+  ID[2] = 0;
+  ID[3] = 0;
+  
+ 
   
   switch(RXB){
     case 0: //RXB0     
-      read(0x61, SID, 2); //SID[0] = SIDH e SID[1] = SIDL
+      read(0x61, ID, 4); //SID[0] = SIDH e SID[1] = SIDL
       
-      if (bitRead(SID[1], 3) == 0){ //ID Padrão
-      
-	lsb = byte(0xEB) & byte(SID[1]);
-	idin = (word(byte(SID[0]), byte(lsb))) >> 5;
+      if (bitRead(ID[1], 3) == 0){ //ID Padrão
+			ID[2] = ID[0];
+			ID[3] = ID[1];
+			ID[0] = 0;
+			ID[1] = 0;
+	
+			ID[3] = (ID[2] << 3) + (ID[3] >> 5);
+			ID[2] = ID[2] >> 5;
   
       }else{//ID Estendido
-
-	uint32_t MSB, nbits;          
-	MSB = (byte(SID[0]) << 5) + (byte(byte(byte(224) & byte(SID[1])) >> 3) + byte(byte(3) & byte(SID[1])));
-    
-	uint8_t EID[2];
-	read(0x63, EID, 2); //EID[0] = EIDH e EID[1] = EIDL
-    
-	nbits = EID[0];
-	nbits = (nbits << 8) + EID[1];
-	MSB = (MSB << 16) + nbits;
-	idin = MSB; 
+	
+			ID[1] = (((ID[1] & 0xE3) >> 3) | (ID[1] & 0x03)) | (ID[0] << 5) ;
+			ID[0] = ID[0] >> 3;
+	
       } 
-	break;
+		break;
 
     case 1: //RXB1      
-      read(0x71, SID, 2); //SID[0] = SIDH e SID[1] = SIDL
-
-      if (bitRead(SID[1], 3) == 0){ //ID Padrão
-	lsb = byte(224) & byte(SID[1]);
-	idin = (word (byte(SID[0]),byte(lsb)) >> 5);
+      read(0x71, ID, 4); //SID[0] = SIDH e SID[1] = SIDL
+      
+      if (bitRead(ID[1], 3) == 0){ //ID Padrão
+			ID[2] = ID[0];
+			ID[3] = ID[1];
+			ID[0] = 0;
+			ID[1] = 0;
+	
+			ID[3] = (ID[2] << 3) + (ID[3] >> 5);
+			ID[2] = ID[2] >> 5;
   
       }else{//ID Estendido
-
-	uint32_t MSB, nbits;          
-	MSB = (byte(SID[0]) << 5) + (byte(byte(byte(224) & byte(SID[1])) >> 3) + byte(byte(3) & byte(SID[1])));
-    
-	uint8_t EID[2];
-	read(0x73, EID, 2); //EID[0] = EIDH e EID[1] = EIDL
-    
-	nbits = EID[0];
-	nbits = (nbits << 8) + EID[1];
-	MSB = (MSB << 16) + nbits;
-	idin = MSB;    
+	
+			ID[1] = (((ID[1] & 0xE3) >> 3) | (ID[1] & 0x03)) | (ID[0] << 5) ;
+			ID[0] = ID[0] >> 3;
+	
       } 
-      break;
+		break;
     
     default:
 
       erroLog  = "RXB invalido";
-
+      return;
 
   };
-  
-  IDIN[0] = idin;
+ 
   
   return;
 
 }
 
-void MCP2515::readDATA(uint32_t *IDIN0, uint8_t *DATAIN0, uint32_t *IDIN1, uint8_t *DATAIN1){
 
-  uint8_t dIN0[8] = {0, 0, 0, 0, 0, 0, 0, 0}, 
-	  dIN1[8] = {0, 0, 0, 0, 0, 0, 0, 0}, 
-	  nbytes0[1]= {0}, nbytes1[1]= {0}; 
-  uint32_t idIN0[1] = {0}, idIN1[1] = {0};     
-  
-  uint8_t check = checkDATA();
-  
-  switch(check){
+void MCP2515::readDATA(uint8_t *RXB0, uint8_t *RXB1){
+
+  for(uint8_t i=0; i < 13; i++){
+    RXB0[i] = 0; 
+    RXB1[i] = 0;
+  }
+
+  switch(checkDATA()){
     case 1: //Dado em RXB0
       
-      read(0x65, nbytes0);
-      nbytes0[0] = nbytes0[0] & 0xF;
-      readID(idIN0, 0);
-      read(0x66, dIN0, nbytes0[0]);
+      read(0x65, RXB0);
       
-      write(0x2C, 0x00, 1);
-      break;
+      RXB0[8] = RXB0[0] & 0xF;
+      
+      if(RXB0[8] > 8){
+		RXB0[8] = 8;
+      }
+      
+      read(0x66, RXB0, RXB0[8]);
+      
+      RXB0[12] = RXB0[7];
+      RXB0[11] = RXB0[6];
+      RXB0[10] = RXB0[5];
+      RXB0[9] = RXB0[4];
+      RXB0[4] = RXB0[8];
+      RXB0[8] = RXB0[3];
+      RXB0[7] = RXB0[2];
+      RXB0[6] = RXB0[1];
+      RXB0[5] = RXB0[0];  
+      
+      readID(RXB0, 0);
+
+      write(0x2C, 0x00, 1);      
+ 
+      return;
       
     case 2: //Dado em  RXB1
   
-      read(0x75, nbytes1);
-      nbytes1[0] = nbytes1[0] & 0xF;
-      readID(idIN1, 1);
-      read(0x76, dIN1, nbytes1[0]);
+      read(0x75, RXB1);
       
-      write(0x2C, 0x00, 1);      
-      break;
+      RXB1[8] = RXB1[0] & 0xF;
+      
+      if(RXB1[8] > 8){
+		RXB1[8] = 8;
+      }
+      
+      read(0x76, RXB1, RXB1[8]);
+      
+      RXB1[12] = RXB1[7];
+      RXB1[11] = RXB1[6];
+      RXB1[10] = RXB1[5];
+      RXB1[9] = RXB1[4];
+      RXB1[4] = RXB1[8];
+      RXB1[8] = RXB1[3];
+      RXB1[7] = RXB1[2];
+      RXB1[6] = RXB1[1];
+      RXB1[5] = RXB1[0];  
+      
+      readID(RXB1, 0);
+
+      write(0x2C, 0x00, 1); 
+      
+      return;
       
     case 3: //Dado em  RXB0 e RXB1
     
-      read(0x65, nbytes0);
-      nbytes0[0] = nbytes0[0] & 0xF;
-      readID(idIN0, 0);
-      read(0x66, dIN0, nbytes0[0]);
-        
-      read(0x75, nbytes1);
-      nbytes1[0] = nbytes1[0] & 0xF;
-      readID(idIN1, 1);
-      read(0x76, dIN1, nbytes1[0]);
+      read(0x65, RXB0);
+      read(0x75, RXB1);
       
-      write(0x2C, 0x00, 1);      
-      break;   
+      RXB0[8] = RXB0[0] & 0xF;
+      RXB1[8] = RXB1[0] & 0xF;
+      
+      if(RXB0[8] > 8){
+		RXB0[8] = 8;
+      }
+      if(RXB1[8] > 8){
+		RXB1[8] = 8;
+      }
+      
+      read(0x66, RXB0, RXB0[8]);
+      read(0x76, RXB1, RXB1[8]);
+      
+      RXB0[12] = RXB0[7];
+      RXB0[11] = RXB0[6];
+      RXB0[10] = RXB0[5];
+      RXB0[9] = RXB0[4];
+      RXB0[4] = RXB0[8];
+      RXB0[8] = RXB0[3];
+      RXB0[7] = RXB0[2];
+      RXB0[6] = RXB0[1];
+      RXB0[5] = RXB0[0];  
+      
+      RXB1[12] = RXB1[7];
+      RXB1[11] = RXB1[6];
+      RXB1[10] = RXB1[5];
+      RXB1[9] = RXB1[4];
+      RXB1[4] = RXB1[8];
+      RXB1[8] = RXB1[3];
+      RXB1[7] = RXB1[2];
+      RXB1[6] = RXB1[1];
+      RXB1[5] = RXB1[0];  
+      
+      readID(RXB0, 0);
+      readID(RXB1, 0);
+
+      write(0x2C, 0x00, 1);       
+      return;   
       
     default:
-      break;
+      return;
   };
   
-  IDIN0[0] = idIN0[0];
-  DATAIN0[0] = nbytes0[0];
-  for(uint8_t i = 0; i <  nbytes0[0]; i++){
-    DATAIN0[i+1] = dIN0[i];
-  }
-  
-  IDIN1[0] = idIN1[0];
-  DATAIN1[0] = nbytes1[0];
-  for(uint8_t i = 0; i< nbytes1[0]; i++){
-    DATAIN1[i+1] = dIN1[i];
-  }
-  
-  return;
-  
 }
-
 
 
 
