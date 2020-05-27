@@ -242,7 +242,7 @@ uint8_t MCP2515::regCheck(uint8_t REG, uint8_t VAL, uint8_t extraMask = 0xFF){
 	//logger erro
 	checkMaskMap[21][0] = 0x60;  checkMaskMap[21][1] = 0x00;
 	checkMaskMap[22][0] = 0x60;  checkMaskMap[22][1] = 0x00;
-	checkMaskMap[23][0] = 0x60;  checkMaskMap[23][1] = 0xC0;
+	checkMaskMap[23][0] = 0x2D;  checkMaskMap[23][1] = 0xC0;
 		
 	//configuracao
 	checkMaskMap[24][0] = 0x28;  checkMaskMap[24][1] = 0xC7;
@@ -1114,6 +1114,50 @@ void MCP2515::status(uint8_t *status){
   SPI.transfer(0xA0);
   status[0] = SPI.transfer(0x00);
   end();
+}
+
+
+//Contador de erros do barramento CAN
+void MCP2515::errorCont(uint8_t *cont){
+  
+  static uint8_t crt = 0;
+  
+  read(0x2D, cont);
+  cont[3] = cont[0];  
+  read(0x1C, cont, 2);
+  
+  
+  if(cont[0] != 255){
+     if((crt & 0xF) == 0xF){
+	crt = crt - 0xF;
+     }
+     crt = crt + 0x1;
+  }
+
+  if(cont[1] == 255){
+
+     crt = crt + 0x10;
+  }
+  
+  if(bitRead(cont[3], 6) == 1){
+
+    bitModify(0x2D, 0x40, 0xFF, 1);
+    if(erroLog != String("Sem erro")){
+        return;
+    }
+  }
+
+  if(bitRead(cont[3], 6) == 1){
+    
+    bitModify(0x2D, 0x80, 0x80, 1);
+    if(erroLog != String("Sem erro")){
+        return;
+    }
+  }
+  
+  cont[2] = crt;
+  
+  return;  
 }
 
 

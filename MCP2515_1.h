@@ -68,7 +68,9 @@ private:
      void conf(uint8_t OPMODE=0x00, uint16_t CANbds=500, uint8_t RESET=1);
 
      void status(uint8_t *status);
-
+     
+     void errorCont(uint8_t *cont);
+     
      void writeID(uint32_t ID, uint8_t TXBUFF = 3, uint8_t CHECK = 1);
      
      void loadTX(uint8_t *data, uint8_t n = 8,  uint8_t abc = 1);
