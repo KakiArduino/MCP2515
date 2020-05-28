@@ -43,16 +43,5 @@ void loop() {
   mcp.send(0x01);
 
   delay(1000);
-  
-  /* Enviando os tres buffs de transmissao
-   */
-  uint8_t TX1[1] ={0x36};
-  
-  uint8_t TX2[7] ={0x56, 0x57, 0x58, 0x59,
-                   0x5A, 0x5B, 0x5C};
-   
-   mcp.writeDATA(5, TX0, 0);//escreve 5 bytes no TXB 0
-   mcp.writeDATA(1, TX1, 1);
-   mcp.writeDATA(7, TX2, 2); 
 
 }
