@@ -188,7 +188,8 @@ uint8_t MCP2515::regCheck(uint8_t REG, uint8_t VAL, uint8_t extraMask = 0xFF){
 	
 	//pode tentar por switch
 	//Condicoes para mascaras 0XFF, i. e., sem mascaras
-	if ((0x36<=REG && REG <=0x3D) | (0x46<=REG && REG <=0x4D) | (0x56<=REG && REG<=0x5D) | ((REG & 0x0F)==0x0F)){
+	if ((0x36<=REG && REG <=0x3D) | (0x46<=REG && REG <=0x4D) | 
+	    (0x56<=REG && REG<=0x5D) | ((REG & 0x0F)==0x0F)){
 	
 		if(data != VAL){
 			erro = 1;
@@ -197,8 +198,14 @@ uint8_t MCP2515::regCheck(uint8_t REG, uint8_t VAL, uint8_t extraMask = 0xFF){
 	}
 	
 	//Condicoes sem mascaras continuacao
-	uint8_t FFvet[] = {0x31, 0x33, 0x34, 0x41, 0x43, 0x44, 0x51, 0x53, 0x54, 0x18, 0x14, 0x10, 0x08, 0x04, 0x00, 0x1B, 0x17, 0x13, 0x0B, 0x07, 0x03, 0x1A, 0x16, 0x12, 0x0A, 0x06, 0x02, 0x20, 0x24, 0x27, 0x23, 0x26, 0x22, 0x2C, 0x2B, 0x2A, 0x29};
-	for (uint8_t i = 0; i< sizeof(FFvet)/sizeof(FFvet[0]); i++){
+	//REG de filtros/mascaras nao le/escreve fora do modo conf
+	uint8_t FFvet[] = {0x31, 0x33, 0x34, 0x41, 0x43, 0x44, 0x51, 
+					   0x53, 0x54, 0x18, 0x14, 0x10, 0x08, 0x04, 
+					   0x00, 0x1B, 0x17, 0x13, 0x0B, 0x07, 0x03, 
+					   0x1A, 0x16, 0x12, 0x0A, 0x06, 0x02, 0x20, 
+					   0x24, 0x27, 0x23, 0x26, 0x22, 0x2C, 0x2B, 
+					   0x2A, 0x29};
+	for (uint8_t i = 0; i< sizeof(FFvet); i++){
 	  if(REG == FFvet[i]){
 	    if(data != VAL){
 		erro = 1;
@@ -213,13 +220,13 @@ uint8_t MCP2515::regCheck(uint8_t REG, uint8_t VAL, uint8_t extraMask = 0xFF){
 	//Buff de saida
 	checkMaskMap[0][0] = 0x30;  checkMaskMap[0][1] = 0x0B;
 	checkMaskMap[1][0] = 0x32;  checkMaskMap[1][1] = 0xEB;
-	checkMaskMap[2][0] = 0x35;  checkMaskMap[2][1] = 0x04;
+	checkMaskMap[2][0] = 0x35;  checkMaskMap[2][1] = 0x4F;
 	checkMaskMap[3][0] = 0x40;  checkMaskMap[3][1] = 0x0B;
 	checkMaskMap[4][0] = 0x42;  checkMaskMap[4][1] = 0xEB;
-	checkMaskMap[5][0] = 0x45;  checkMaskMap[5][1] = 0x04;
+	checkMaskMap[5][0] = 0x45;  checkMaskMap[5][1] = 0x4F;
 	checkMaskMap[6][0] = 0x50;  checkMaskMap[6][1] = 0x0B;
 	checkMaskMap[7][0] = 0x52;  checkMaskMap[7][1] = 0xEB;
-	checkMaskMap[8][0] = 0x55;  checkMaskMap[8][1] = 0x04;
+	checkMaskMap[8][0] = 0x55;  checkMaskMap[8][1] = 0x4F;
 	checkMaskMap[9][0] = 0x0D;  checkMaskMap[9][1] = 0x07;
 		
 	//Buff de entrada
@@ -259,7 +266,8 @@ uint8_t MCP2515::regCheck(uint8_t REG, uint8_t VAL, uint8_t extraMask = 0xFF){
 	}
 
 	//Condicoes de registro invalido para escrita
-	if (((REG & 0x0F)==0x0E) or (0x61<=REG<=0x6D) or (0x71<=REG<=0x7D) or (0x1C<=REG<=0x1D)){
+	if (((REG & 0x0F)==0x0E) | (0x61<=REG<=0x6D) | 
+	     (0x71<=REG<=0x7D) | (0x1C<=REG<=0x1D)){
 		
 	  erro = 2;
 	  return erro;
@@ -270,7 +278,7 @@ uint8_t MCP2515::regCheck(uint8_t REG, uint8_t VAL, uint8_t extraMask = 0xFF){
 
 
 //Funcao de escrita em registros
-void MCP2515::write(uint8_t REG, uint8_t VAL, uint8_t CHECK = 0){
+void MCP2515::write(uint8_t REG, uint8_t VAL, uint8_t CHECK = 1){
   /* Descricao da funcao write (REG, VAL, CHECK=0)...
    * tem como argumento, o endereço do 
    * registro (REG) e o valor (VAL), com
@@ -1109,6 +1117,7 @@ void MCP2515::conf(uint8_t OPMODE=0x00, uint16_t CANbds=500, uint8_t RESET=1){
   return;
 }
 
+
 void MCP2515::status(uint8_t *status){
   start();
   SPI.transfer(0xA0);
@@ -1127,9 +1136,9 @@ void MCP2515::errorCont(uint8_t *cont){
   read(0x1C, cont, 2);
   
   
-  if(cont[0] != 255){
+  if(cont[0] == 255){
      if((crt & 0xF) == 0xF){
-	crt = crt - 0xF;
+		crt = crt - 0xF;
      }
      crt = crt + 0x1;
   }
@@ -1161,8 +1170,9 @@ void MCP2515::errorCont(uint8_t *cont){
 }
 
 
+
 //Escrita
-void MCP2515::writeID(uint32_t ID, uint8_t TXBUFF = 3, uint8_t CHECK = 1){
+void MCP2515::writeID(uint32_t ID, uint8_t TXBUFF = 3, uint8_t timeOut = 10, uint8_t CHECK = 1){
 	/* Descricao da funcao...
 	*
 	* 	1)  
@@ -1176,280 +1186,185 @@ void MCP2515::writeID(uint32_t ID, uint8_t TXBUFF = 3, uint8_t CHECK = 1){
 	*				CHECK :
 	*
 	* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-  
+	
+	uint8_t TXCRT;
+	long t = millis();
+	
+	
     if(ID >= 536870912){
-	erroLog = "ID invalido, tente um ID < 536870912";
-	return;
+		erroLog = "ID invalido, tente um ID < 536870912";
+		return;
     }
 	
-    if(CHECK == 1){
+	
     if (ID > 2047){ //Extendido
-    uint8_t msSID, lsSID, lsEID, msEID;
-    lsEID = ID & 0xFF;
-    msEID = ID >> 8 & 0XFF;
-    lsSID = (((ID >> 13) & 0xE0) + 0x8) + ((ID >> 16) & 0x3);
-    msSID = ID >> 21 & 0xFF;
+		uint8_t msSID, lsSID, lsEID, msEID;
+		lsEID = ID & 0xFF;
+		msEID = ID >> 8 & 0XFF;
+		lsSID = (((ID >> 13) & 0xE0) + 0x8) + ((ID >> 16) & 0x3);
+		msSID = ID >> 21 & 0xFF;
 	
-    switch(TXBUFF){
-      case 0:
-	write(0x34, lsEID, 1);
-	if(erroLog == "Erro na escrita"){
-	  return;
-	}
-	write(0x33, msEID, 1);
-	if(erroLog == "Erro na escrita"){
-	  return;
-	}
-	write(0x32, lsSID, 1);
-	if(erroLog == "Erro na escrita"){
-	  return;
-	}
-	write(0x31, msSID, 1);
-	if(erroLog == "Erro na escrita"){
-	  return;
-	}
-	break;
+		switch(TXBUFF){
+			case 0:
+				while(millis() - t < timeOut){
+					read(0x30, TXCRT);
+					if(bitRead(TXCRT, 3)==0 ){
+						write(0x34, lsEID, CHECK);
+						write(0x33, msEID, CHECK);
+						write(0x32, lsSID, CHECK);
+						write(0x31, msSID, CHECK);
+						if(erroLog == "Erro na escrita"){
+							return;
+						}				
+						return;
+					}
+				}
 	
-	case 1:
-	write(0x44, lsEID, 1);
-	if(erroLog == "Erro na escrita"){
-	  return;
-	}
-	write(0x43, msEID, 1);
-	if(erroLog == "Erro na escrita"){
-	  return;
-	}
-	write(0x42, lsSID, 1);
-	if(erroLog == "Erro na escrita"){
-	  return;
-	}
-	write(0x41, msSID, 1);
-	if(erroLog == "Erro na escrita"){
-	  return;
-	}
-	break;	
+			case 1:
+				while(millis() - t < timeOut){
+					read(0x40, TXCRT);
+					if(bitRead(TXCRT, 3)==0 ){
+						write(0x44, lsEID, CHECK);
+						write(0x43, msEID, CHECK);
+						write(0x42, lsSID, CHECK);
+						write(0x41, msSID, CHECK);
+						if(erroLog == "Erro na escrita"){
+							return;
+						}				
+						return;
+					}
+				}
 	
-	case 2:
-	write(0x54, lsEID, 1);
-	if(erroLog == "Erro na escrita"){
-	  return;
-	}
-	write(0x53, msEID, 1);
-	if(erroLog == "Erro na escrita"){
-	  return;
-	}
-	write(0x52, lsSID, 1);
-	if(erroLog == "Erro na escrita"){
-	  return;
-	}
-	write(0x51, msSID, 1);
-	if(erroLog == "Erro na escrita"){
-	  return;
-	}
-	break;	
+			case 2:
+				while(millis() - t < timeOut){
+					read(0x50, TXCRT);
+					if(bitRead(TXCRT, 3)==0 ){
+						write(0x54, lsEID, CHECK);
+						write(0x53, msEID, CHECK);
+						write(0x52, lsSID, CHECK);
+						write(0x51, msSID, CHECK);
+						if(erroLog == "Erro na escrita"){
+							return;
+						}				
+						return;
+					}
+				}			
 	
-	default:
-	write(0x34, lsEID, 1);
-	if(erroLog == "Erro na escrita"){
-	  return;
-	}
-	write(0x33, msEID, 1);
-	if(erroLog == "Erro na escrita"){
-	  return;
-	}
-	write(0x32, lsSID, 1);
-	if(erroLog == "Erro na escrita"){
-	  return;
-	}
-	write(0x31, msSID, 1);
-	if(erroLog == "Erro na escrita"){
-	  return;
-	}		
-	write(0x44, lsEID, 1);
-	if(erroLog == "Erro na escrita"){
-	  return;
-	}
-	write(0x43, msEID, 1);
-	if(erroLog == "Erro na escrita"){
-	  return;
-	}
-	write(0x42, lsSID, 1);
-	if(erroLog == "Erro na escrita"){
-	  return;
-	}
-	write(0x41, msSID, 1);
-	if(erroLog == "Erro na escrita"){
-	  return;
-	}	
-	write(0x54, lsEID, 1);
-	if(erroLog == "Erro na escrita"){
-	  return;
-	}
-	write(0x53, msEID, 1);
-	if(erroLog == "Erro na escrita"){
-	  return;
-	}
-	write(0x52, lsSID, 1);
-	if(erroLog == "Erro na escrita"){
-	  return;
-	}
-	write(0x51, msSID, 1);
-	if(erroLog == "Erro na escrita"){
-	  return;
-	}
-    };		
-	
-      }else{//Padrao
-	uint8_t msSID = ID >> 3, lsSID = (ID & 7)*0x20;  
-		
-	switch (TXBUFF){
-	  case 0:
-	    write(0x32, lsSID, 1);
-	    if(erroLog == "Erro na escrita"){
-	      return;
-	    }
-	    write(0x31, msSID, 1);
-	    if(erroLog == "Erro na escrita"){
-	      return;
-	    }	
-	    break;
-	  
-	  case 1:
-	    write(0x42, lsSID, 0);
-	    if(erroLog == "Erro na escrita"){
-	      return;
-	    }
-	    write(0x41, msSID, 1);
-	    if(erroLog == "Erro na escrita"){
-	      return;
-	    }			
-	    break;
-	
-	  case 2:
-	    write(0x52, lsSID, 1);
-	    if(erroLog == "Erro na escrita"){
-	      return;
-	    }
-	    write(0x51, msSID, 1);
-	    if(erroLog == "Erro na escrita"){
-	      return;
-	    }		
-	    break;	
-		
-	  default:
-	    write(0x32, lsSID, 1);
-	    if(erroLog == "Erro na escrita"){
-	      return;
-	    }
-	    write(0x31, msSID, 1);
-	    if(erroLog == "Erro na escrita"){
-	      return;
-	    }			
-	    
-	    write(0x42, lsSID, 1);
-	    if(erroLog == "Erro na escrita"){
-	      return;
-	    }
-	    write(0x41, msSID, 1);
-	    if(erroLog == "Erro na escrita"){
-	      return;
-	    }
-		
-	    write(0x52, lsSID, 1);
-	    if(erroLog == "Erro na escrita"){
-	      return;
-	    }
-	    write(0x51, msSID, 1);
-	    if(erroLog == "Erro na escrita"){
-	      return;
-	    }	  
-	};	
-
-      }	
-  
-    }else{
-      if (ID > 2047){ //Extendido
-	uint8_t msSID, lsSID, lsEID, msEID;
-	lsEID = ID & 0xFF;
-	msEID = ID >> 8 & 0XFF;
-	lsSID = (((ID >> 13) & 0xE0) + 0x8) + ((ID >> 16) & 0x3);
-	msSID = ID >> 21 & 0xFF;
-	
-	switch(TXBUFF){
-	  case 0:
-	    write(0x34, lsEID);
-	    write(0x33, msEID);
-	    write(0x32, lsSID);
-	    write(0x31, msSID);
-	    break;
-			
-	  case 1:
-	    write(0x44, lsEID);
-	    write(0x43, msEID);
-	    write(0x42, lsSID);
-	    write(0x41, msSID);
-	    break;	
-	
-	  case 2:
-	    write(0x54, lsEID);
-	    write(0x53, msEID);
-	    write(0x52, lsSID);
-	    write(0x51, msSID);
-	    break;	
-	
-	  default:
-	    write(0x34, lsEID);
-	    write(0x33, msEID);
-	  
-	    write(0x32, lsSID);
-	    write(0x31, msSID);
-	
-	    write(0x44, lsEID);
-	    write(0x43, msEID);
-	    write(0x42, lsSID);
-	    write(0x41, msSID);
-	
-	    write(0x54, lsEID);
-	    write(0x53, msEID);
-	    write(0x52, lsSID);
-	    write(0x51, msSID);
-	};		
-	
-      }else{//Padrao
-	uint8_t msSID = ID >> 3, lsSID = (ID & 7)*0x20;  
-	
-	switch (TXBUFF){
-	  case 0:
-	    write(0x32, lsSID);
-	    write(0x31, msSID);
-	    break;
-	  
-	  case 1:
-	    write(0x42, lsSID);
-	    write(0x41, msSID);
-	    break;
-	
-	  case 2:
-	    write(0x52, lsSID);
-	    write(0x51, msSID);		
-	    break;	
-		
-	  default:
-	    write(0x32, lsSID);
-	    write(0x31, msSID);
-		
-	    write(0x42, lsSID);
-	    write(0x41, msSID);
-
-	    write(0x52, lsSID);
-	    write(0x51, msSID);  
-	};	
-
-      }		
-	
+			default:
+				while(millis() - t < timeOut){
+					read(0x30, TXCRT);
+					if(bitRead(TXCRT, 3)==0){
+						write(0x34, lsEID, CHECK);
+						write(0x33, msEID, CHECK);
+						write(0x32, lsSID, CHECK);
+						write(0x31, msSID, CHECK);
+						if(erroLog == "Erro na escrita"){
+							return;
+						}
+						break;
+					}	
+				}
+				while(millis() - t < timeOut){
+					read(0x30, TXCRT);
+					if(bitRead(TXCRT, 3)==0){
+						write(0x44, lsEID, CHECK);
+						write(0x43, msEID, CHECK);
+						write(0x42, lsSID, CHECK);
+						write(0x41, msSID, CHECK);
+						if(erroLog == "Erro na escrita"){
+							return;
+						}
+						break;
+					}	
+				}
+				while(millis() - t < timeOut){
+					read(0x50, TXCRT);
+					if(bitRead(TXCRT, 3)==0){
+						write(0x54, lsEID, CHECK);
+						write(0x53, msEID, CHECK);
+						write(0x52, lsSID, CHECK);
+						write(0x51, msSID, CHECK);
+						if(erroLog == "Erro na escrita"){
+							return;
+						}
+						return;
+					}	
+				}				
+		};		
     }
+
+
+	if (ID < 2048){ //Padrao
+		uint8_t msSID = ID >> 3, lsSID = (ID & 7)*0x20;  
+		
+		switch (TXBUFF){
+			case 0:
+				write(0x32, lsSID, CHECK);
+				if(erroLog == "Erro na escrita"){
+					return;
+				}
+				write(0x31, msSID, CHECK);
+				if(erroLog == "Erro na escrita"){
+					return;
+				}	
+				return;	
+	  
+			case 1:
+				write(0x42, lsSID, CHECK);
+				if(erroLog == "Erro na escrita"){
+					return;
+				}
+				write(0x41, msSID, CHECK);
+				if(erroLog == "Erro na escrita"){
+					return;
+				}			
+				return;	
+	
+			case 2:
+				write(0x52, lsSID, CHECK);
+				if(erroLog == "Erro na escrita"){
+					return;
+				}
+				write(0x51, msSID, CHECK);
+				if(erroLog == "Erro na escrita"){
+					return;
+				}		
+				return;	
+		
+			default:
+				write(0x32, lsSID, CHECK);
+				if(erroLog == "Erro na escrita"){
+					return;
+				}
+				write(0x31, msSID, CHECK);
+				if(erroLog == "Erro na escrita"){
+					return;
+				}			
+	    
+				write(0x42, lsSID, CHECK);
+				if(erroLog == "Erro na escrita"){
+					return;
+				}
+				write(0x41, msSID, CHECK);
+				if(erroLog == "Erro na escrita"){
+					return;
+				}
+		
+				write(0x52, lsSID, CHECK);
+				if(erroLog == "Erro na escrita"){
+					return;
+				}
+				write(0x51, msSID, CHECK);
+				if(erroLog == "Erro na escrita"){
+					return;
+				}
+				return;
+		};	
+	}	
+ 
 	
 }
+
 
 void MCP2515::loadTX(uint8_t *data, uint8_t n = 8, uint8_t abc = 1){
 	/* Descricao da funcao...
@@ -1485,53 +1400,79 @@ void MCP2515::loadTX(uint8_t *data, uint8_t n = 8, uint8_t abc = 1){
 }
 
 
-void MCP2515::writeDATA(uint8_t n, uint8_t *data, uint8_t TXB = 0,uint8_t CHECK = 1){
+void MCP2515::send(uint8_t TXbuff = 0x01){
+  start();
+  SPI.transfer(0x80 + TXbuff);
+  end();
+}
+
+
+void MCP2515::writeDATA(uint8_t n, uint8_t *data, uint8_t TXB = 0, uint8_t timeOut = 10, uint8_t CHECK = 1){
   
-  uint8_t abc;
+  uint8_t TXCRT[1] = {0xFF};
+  long t = millis();
+  
+  erroLog = "Sem erro";
   
   if( n > 8){
     erroLog == "n bytes invalido";
     return;
   } 
   
-  switch (TXB){
-    case 0:
-      TXB = 0x35;
-      abc  = 1;
-      break;
+	switch (TXB){
+		case 0:
+		  while(millis() - t < timeOut){
+			read(0x30, TXCRT);
+			if(bitRead(TXCRT[0], 3) == 0 ){
+				write(0x35, n, CHECK);
+				if(erroLog == "Erro na escrita"){
+					return;
+				}
+				loadTX(data, n, 1);
+				send(0x01);
+				return;
+			}
+		  }
+		  break;
     
-    case 1:
-      TXB = 0x45;
-      abc  = 3;
-      break;
-      
-    case 2: 
-      TXB = 0x55;
-      abc  = 5;
-      break;
-    
-    default:
-      erroLog = "TXB invalido";
-      return;
-  };
-
-  
-  write(TXB, n, CHECK);
-  if(erroLog == "Erro na escrita"){
-    return;
-  }
-  
-  loadTX(data, n, abc);
-  
-  return;
+		case 1:
+		  while(millis() - t < timeOut){
+			read(0x40, TXCRT);
+			if(bitRead(TXCRT[0], 3)==0 ){
+				write(0x45, n, CHECK);
+				if(erroLog == "Erro na escrita"){
+					return;
+				}
+				loadTX(data, n, 3);
+				send(0x02);
+				return;
+			}
+		  }
+		  break;
+		case 2:    
+		  
+		  while(millis() - t < timeOut){
+			read(0x50, TXCRT);
+			if(bitRead(TXCRT[0], 3)==0 ){
+				write(0x55, n, CHECK);
+				if(erroLog == "Erro na escrita"){
+					return;
+				}
+				loadTX(data, n, 5);
+				send(0x04);
+				return;
+			}
+		  }
+		  break;
+		default:
+			erroLog = "TXB invalido";
+			return;
+	};
+	
+	erroLog == "Buff cheio";
+	return;
 }
 
-
-void MCP2515::send(uint8_t TXbuff = 0x01){
-  start();
-  SPI.transfer(0x80 + TXbuff);
-  end();
-}
 
 
 //Leitura
@@ -1569,6 +1510,7 @@ uint8_t MCP2515::checkDATA(){
   
   return;
 }
+
 
 
 void MCP2515::readID(uint8_t *ID, uint8_t RXB = 0){

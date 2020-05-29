@@ -55,7 +55,7 @@ private:
      
      uint8_t regCheck(uint8_t REG, uint8_t VAL, uint8_t extraMask = 0xFF);  
      
-     void write(uint8_t REG, uint8_t VAL, uint8_t CHECK = 0);
+     void write(uint8_t REG, uint8_t VAL, uint8_t CHECK = 1);
      
      void bitModify(uint8_t REG, uint8_t MASK, uint8_t VAL, uint8_t CHECK = 0);
 
@@ -71,11 +71,11 @@ private:
      
      void errorCont(uint8_t *cont);
      
-     void writeID(uint32_t ID, uint8_t TXBUFF = 3, uint8_t CHECK = 1);
+     void writeID(uint32_t ID, uint8_t TXBUFF = 3, uint8_t timeOut = 10, uint8_t CHECK = 1);
      
      void loadTX(uint8_t *data, uint8_t n = 8,  uint8_t abc = 1);
      
-     void writeDATA(uint8_t n, uint8_t *data, uint8_t TXB = 0,uint8_t CHECK = 1);
+     void writeDATA(uint8_t n, uint8_t *data, uint8_t TXB = 0, uint8_t timeOut = 10, uint8_t CHECK = 1);
      
      void send(uint8_t TXbuff = 0x01);
 
