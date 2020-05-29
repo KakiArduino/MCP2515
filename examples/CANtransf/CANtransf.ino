@@ -16,6 +16,9 @@ MCP2515 mcp(0xBB8, 8, 4);
 
 
 void setup() {
+	Serial.begin(9600);
+	Serial.println(mcp.erroLog);
+	Serial.println('\n');  
   
 }
 
@@ -30,17 +33,11 @@ void loop() {
   */
   mcp.writeDATA(8, TX0);
   
-  /*  Enviando o TXB0
-   *  mcp.send(code), code  = TXB2 TXB1 TXB0
-   *  Envia somente TXB0:  code =  001 = 0x01
-   *  Envia somente TXB1:  code =  010 = 0x02
-   *  Envia TXB0 e TXB1 :  code =  011 = 0x03
-   *  Envia somente TXB2:  code =  100 = 0x04
-   *  Envia TXB0 e TXB2 :  code =  101 = 0x05
-   *  Envia TXB1 e TXB2 :  code =  110 = 0x06
-   *  Envia todos buffs :  code =  111 = 0x07
-   */
-  mcp.send(0x01);
+  //check, o seucesso do envio pelo TXB0(0x30) 
+  if(mcp.regCheck(0x30, 0x04, 0x04)==0){
+	//0x04: verifica se o bit 3 do REG 0x30 é 1
+	Serial.println("Enviado!");
+  }
 
   delay(1000);
 
