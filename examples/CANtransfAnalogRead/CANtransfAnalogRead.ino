@@ -44,7 +44,14 @@ void sendData(uint64_t data, uint8_t dataSize){
     i = i+1;
   }
   mcp.writeDATA(n, TX);
-  do{}while(mcp.regCheck(0x30, 0x04, 0x04)!=0);
+  uint8_t n = 0;
+  do{
+    if(n > 10){
+      Serial.println("Erro de checagem de envio");
+      break;
+    }
+    n = n+1
+  }while(mcp.regCheck(0x30, 0x04, 0x04)!=0);
   
   Serial.print(n);
   Serial.print('\t');
