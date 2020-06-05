@@ -29,7 +29,8 @@ Serial.print('\t');
 Serial.print("TEC overflow ");
 Serial.print((cont[2]&0xF));
 Serial.print(" times");
-
+Serial.print('\t');
+   
 Serial.print("REC overflow ");
 Serial.print((cont[2] >> 4) & 0xF);
 Serial.print(" times");
