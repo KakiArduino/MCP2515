@@ -23,13 +23,13 @@ void setup() {
 
 void loop() {
  
-  //Vetores para os 8 bytes recebidos, + um para o comprimento em bytes
+  //Ate 8 bytes de dato + 1 de numero de bytes + 4 para o ID 
   uint8_t BX0[13], BX1[13];   
 
   //Verifica se ha nova mensagem, caso tenha salva
   mcp.readDATA(BX0, BX1);
 
-  //Se dado tiver sido recebido em TB0 imprime
+  //Verifica se houve dado recebido em TB0 imprime
   if (BX0[4] > 0){
     for(uint8_t i=0; i < 4; i++){
       Serial.print(BX0[i], HEX);
@@ -42,7 +42,7 @@ void loop() {
     Serial.println();   
     }
   
-  //Se dado tiver sido recebido em TB1 imprime
+  //Verifica se houve dado recebido em TB1 imprime
   if(BX1[4] > 0){
     for(uint8_t i=0; i < 4; i++){
       Serial.print(BX1[i], HEX);
