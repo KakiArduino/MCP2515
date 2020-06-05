@@ -42,7 +42,7 @@ void loop() {
     Serial.println();   
     }
   
-  //Se dado tiver sido recebido em TB0 imprime
+  //Se dado tiver sido recebido em TB1 imprime
   if(BX1[4] > 0){
     for(uint8_t i=0; i < 4; i++){
       Serial.print(BX1[i], HEX);
