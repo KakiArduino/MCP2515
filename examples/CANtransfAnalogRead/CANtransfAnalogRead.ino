@@ -29,7 +29,7 @@ void loop() {
       soma = 0;
     }
   }
-  if(NS2 < 0){
+  if(NS2 > 0){
     media = media + round(soma/NS);
     media = round(media/NS2); 
     sendData(media, sizeof(media));  
@@ -40,7 +40,7 @@ void loop() {
     Serial.println(media);
   }  
   
-  //delay(1000);
+
 }
 
 
@@ -67,13 +67,5 @@ void sendData(uint64_t data, uint8_t dataSize){
     }
     cont = cont+1;
   }while(mcp.regCheck(0x30, 0x04, 0x04)!=0);
-  
-  /*Serial.print(n);
-  Serial.print('\t');
-  for(uint8_t i = 0; i< n; i++){
-    Serial.print(TX[i]);  
-    Serial.print(' ');  
-  }
-  Serial.print('\n'); */
 
 }
