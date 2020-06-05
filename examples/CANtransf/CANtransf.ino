@@ -35,7 +35,16 @@ void loop() {
   
   //check, o seucesso do envio pelo TXB0(0x30)
   //0x04: verifica se o bit 3 do REG 0x30 é 1
-  do{}while(mcp.regCheck(0x30, 0x04, 0x04)!=0);
+  uint8_t n= 0;
+  do{
+  
+    if(n > 10) {
+      println("Erro de checagem de envio");
+      break;
+    }
+    delay(10);
+       n = n + 1;
+  }while(mcp.regCheck(0x30, 0x04, 0x04)!=0);
   
   Serial.println("Enviado!");
 
