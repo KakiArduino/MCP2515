@@ -10,22 +10,37 @@ void setup() {
   Serial.begin(9600);
   Serial.println(mcp.erroLog);
   Serial.println('\n');  
-  //analogReference(INTERNAL);
+  analogReference(INTERNAL);
 }
 
 void loop() {
  
   //Leitura de um sinal analogico
-  int n = 0;
-  long A = 0, t = millis();
-  while(millis()- t < 10){
-    A = A + analogRead(A0);  
-    n = n + 1;
+  float SPS = 1;
+  long media = 0, soma = 0;
+  long NS = 0, NS2 = 0, t = millis();
+  while(millis()- t < (1000/SPS)){
+    soma = soma + analogRead(A0);  
+    NS = NS + 1;
+    if( abs(soma) > round(2147483647*0.9)){
+      media = media + round(soma/NS);
+      NS2 = NS2+1;
+      NS = 0;      
+      soma = 0;
+    }
   }
-  A = round(A/n); 
-  sendData(A, sizeof(A));
+  if(NS2 < 0){
+    media = media + round(soma/NS);
+    media = round(media/NS2); 
+    sendData(media, sizeof(media));  
+    Serial.println(media);
+  }else{
+    media = round(soma/NS); 
+    sendData(media, sizeof(media)); 
+    Serial.println(media);
+  }  
   
-  delay(1000);
+  //delay(1000);
 }
 
 
@@ -44,21 +59,21 @@ void sendData(uint64_t data, uint8_t dataSize){
     i = i+1;
   }
   mcp.writeDATA(n, TX);
-  uint8_t n = 0;
+  uint8_t cont = 0;
   do{
-    if(n > 10){
+    if(cont > 10){
       Serial.println("Erro de checagem de envio");
       break;
     }
-    n = n+1
+    cont = cont+1;
   }while(mcp.regCheck(0x30, 0x04, 0x04)!=0);
   
-  Serial.print(n);
+  /*Serial.print(n);
   Serial.print('\t');
   for(uint8_t i = 0; i< n; i++){
     Serial.print(TX[i]);  
     Serial.print(' ');  
   }
-  Serial.print('\n');
+  Serial.print('\n'); */
 
 }
