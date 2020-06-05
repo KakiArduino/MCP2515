@@ -114,7 +114,7 @@ void SDprint(uint8_t *BUFF, uint8_t ii){
         DATA0 = DATA0 + (buff[ii][5 + i] << (8*(buff[ii][4] - i -1)));        
       }
       }
-      String str = String(String(ID)+(" (")+String(buff[ii][4])+("): ")+ String(DATA0)+String(DATA1)+'\n');
+      String str = String(String(ID)+(" (")+String(buff[ii][4])+("): ")+ String(HEX(DATA0))+String(HES(DATA1)));
       
       long fileSize = 0;
       do{
@@ -125,7 +125,7 @@ void SDprint(uint8_t *BUFF, uint8_t ii){
 
         fileSize = arq.size();
         if(fileSize < 1000 & arq){
-          arq.print(str);
+          arq.println(str);
           arq.close();
           break;
         }
