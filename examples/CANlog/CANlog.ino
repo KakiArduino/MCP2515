@@ -5,7 +5,7 @@
 MCP2515 mon(0x00, 8, 4);
 
 
-const uint8_t n = 35; //n = numero de dispositivos
+const uint8_t n = 35; //n = numero maximos de frames armazenados
 uint8_t buff[n][13];
 
 void readCAN () {
