@@ -39,7 +39,7 @@ void loop() {
   do{
   
     if(n > 10) {
-      println("Erro de checagem de envio");
+      Serial.println("Erro de checagem de envio");
       break;
     }
     delay(10);
