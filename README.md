@@ -1,7 +1,7 @@
 # CAN-Bus-MCP2515 (under construction)
 
  >John Welvins Barros de Araujo¹ <br /> 
- >Prof. Fabrico Ferrari¹ <br /> 
+ >Prof. Fabricio Ferrari¹ <br /> 
  >Prof. Edson M. Kakuno² <br /> 
 
 ¹ [IMEF](https://imef.furg.br/) - Universidade Federal do Rio Grande <br /> 
