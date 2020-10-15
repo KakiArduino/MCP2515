@@ -1,4 +1,4 @@
-# CAN-Bus-MCP2515 (under construction)
+# MCP2515 (under construction)
 
  >John Welvins Barros de Araujo¹ <br /> 
  >Prof. Fabricio Ferrari¹ <br /> 
