@@ -18,6 +18,8 @@ Por questões de comodidade muitos dos códigos numéricos relacionados a comuni
 
 ## Frames
 
+O frame é a estrutura de dados usados internamente dentro da biblioteca, é composto pelo ID padrão, pela estensão de ID, pelo código DLC - *Data Len Code* e pelos bytes de dados.
+
 ### Variáveis de um frame
 * `uint16_t id_std;`
    > Variável de 2 bytes que armazena o valor do ID padrão do  frame.
@@ -37,45 +39,29 @@ Por questões de comodidade muitos dos códigos numéricos relacionados a comuni
 * `String type = "Unknown";`
    > String com o tipo do frame, padrão ("Std. Data"), estendido ("Ext. Data") ou "No frame" que é usado para indicar que não há novos frames nos buffers de entrada do MCP2515.
 
+### Declaração de um frame
 
-
-\subsection{\textbf{CANframe()}}
-\mint{C++}{CANframe();}
-
-Função para declaração de uma estrutura de variáveis do tipo \textit{CANframe} sem argumentos.
-
-\begin{itemize}
-  \item Exemplo de uso:
-    \begin{enumerate}
-        \item Declaração de um \textit{frame} CAN.
-            \begin{minted}{C++} 
+* `CANframe();`
+   > Função para declaração de uma estrutura de variáveis do tipo CANframe sem argumentos.
+   * Exemplo de uso:
+     ```C+
             CANframe frm();
-            frm.id_std = 0x7FF;
-            \end{minted}
-            Declaração de um \textit{frame} sem fornecer parâmetros de entrada, seguida, na linha de baixo, pela atribuição de 0x7FF para o ID padrão, o maior valor possível, do \textit{frame} criado acima.
+            frm.id_std = 0x7FF;     
+     ```
+     > Declaração de um frame sem fornecer parâmetros de entrada, seguida, na linha de baixo, pela atribuição de 0x7FF para o ID padrão, o maior valor possível, do frame criado acima.
             
-        \end{enumerate}
-\end{itemize}
 
 
-\subsection{\textbf{CANframe} (frameBytes, extFlag)}
-\mint{C++}{CANframe(uint8_t *frameBytes, uint8_t extFlag = 0);}
+* `CANframe(uint8_t *frameBytes, uint8_t extFlag = 0);`
+   > Função para criação de \textit{frame}, a partir de uma lista com todos os \textit{bytes} do \textit{frame}.
 
-Função para criação de \textit{frame}, a partir de uma lista com todos os \textit{bytes} do \textit{frame}.
+   * Parâmetros de entrada:
+     * **frameBytes** lista com todos os \textit{bytes} do a serem atribuídos ao \textit{frame}. 
 
-\begin{itemize}
-  \item Parâmetros de entrada:
-    \begin{itemize}
-        \item \textbf{frameBytes} lista com todos os \textit{bytes} do a serem atribuídos ao \textit{frame}. 
-
-        \item \textbf{extFlag} sinalizador de extensão de ID, se \num{0}  o \textit{frame} é padrão, se \num{1} é estendido.
-
-    \end{itemize}
+     * **extFlag** sinalizador de extensão de ID, se 0  o frame é padrão, se 1 é estendido.
     
-  \item Exemplo de uso:
-    \begin{enumerate}
-        \item Declaração de um \textit{frame} CAN.
-            \begin{minted}{C++}
+   * Exemplo de uso: Declaração de um frame CAN.
+     ```C+
             frameBytes [10] = {0x07, 0xFF, 
                                0x03, 0xFF, 0xFF,
                                0x04,
@@ -84,17 +70,14 @@ Função para criação de \textit{frame}, a partir de uma lista com todos os \t
             CANframe frm(frameBytes, 1);
             
             Serial.println(frm.id_std);
-            \end{minted}
-            Primeiro é declarado a lista \textit{frameBytes}, os dois primeiros \textit{bytes} (0 e 1) compõem o ID padrão, concatenando tem-se 0x7FF o maior valor possível.
-            Os três \textit{bytes} seguintes da lista \textit{frameBytes}, posições 2, 3 e 4, correspondem a extensão de ID, que neste caso vale o valor máximo 0x3FFFF.
-            O \textit{byte} seguinte, posição 5, é o código dlc, que no caso indica quatro \textit{bytes} de dados.
-        
-            Após a declaração da lista com os \textit{bytes}, é feito a declaração do \textit{frame} estendido com a lista \textit{frameBytes}.
-            Por fim o ID padrão é impresso através da variável \textit{id\_std} na última linha, isto é possível, pois ao declarar o \textit{frame}, todos suas variáveis são atribuídas.
-            
-        \end{enumerate}
-\end{itemize}
+     ```
 
+       Primeiro é declarado a lista frameBytes, os dois primeiros bytes (0 e 1) compõem o ID padrão, concatenando tem-se 0x7FF o maior valor possível.
+       Os três bytes seguintes da lista frameBytes, posições 2, 3 e 4, correspondem a extensão de ID, que neste caso vale o valor máximo 0x3FFFF.
+       O byte seguinte, posição 5, é o código dlc, que no caso indica quatro bytes de dados.
+       Após a declaração da lista com os bytes, é feito a declaração do frame estendido com a lista frameBytes.
+       Por fim o ID padrão é impresso através da variável id_std na última linha, isto é possível, pois ao declarar o frame, todos suas variáveis são atribuídas.
+       
 
 \subsection{\textbf{CANframe} (idstd, idext, dlc\_, data)}
 \mint{C++}{CANframe(uint16_t idstd, uint32_t idext, uint8_t dlc_, uint8_t *data);}
