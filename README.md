@@ -21,7 +21,7 @@ Por questões de comodidade muitos dos códigos numéricos relacionados a comuni
 
 ### Variáveis de um frame
 * `<uint16_t id_std;>`
-> Variável de 2 bytes que armazena o valor do ID padrão do  frame.
+   > Variável de 2 bytes que armazena o valor do ID padrão do  frame.
 
 * \item \mint{C++}{uint32_t id_ext;}
     Variável de \num{4} \textit{bytes} que armazena o valor da extensão do ID do \textit{frame}.
