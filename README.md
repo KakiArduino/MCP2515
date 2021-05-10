@@ -20,7 +20,7 @@ Por questões de comodidade muitos dos códigos numéricos relacionados a comuni
 
 
 ### Variáveis de um frame
-* '<uint16_t id_std;>'
+* `<uint16_t id_std;>`
     Variável de \num{2} \textit{bytes} que armazena o valor do ID padrão do \textit{frame}.
 
 * \item \mint{C++}{uint32_t id_ext;}
