@@ -25,16 +25,16 @@ O frame é a estrutura de dados usados internamente dentro da biblioteca, é com
    > Variável de 2 bytes que armazena o valor do ID padrão do  frame.
 
 * `uint32_t id_ext;`
-   > Variável de \num{4} \textit{bytes} que armazena o valor da extensão do ID do \textit{frame}.
+   > Variável de 4 bytes que armazena o valor da extensão do ID do frame.
     
 * `uint8_t dlc;`
-   > Variável de \num{1} \textit{byte} que armazena o código de comprimento, número de \textit{bytes} de dados, do \textit{frame}.
+   > Variável de 1 byte que armazena o código de comprimento, número de bytes de dados, do frame.
     
 * `uint8_t data[8];`
-   > Lista de \textit{bytes} de dados do \textit{frame}.
+   > Lista de bytes de dados do frame.
     
 * `uint8_t bts[14];`
-   > Lista com todos os \textit{bytes} do \textit{frame}.
+   > Lista com todos os bytes do frame.
     
 * `String type = "Unknown";`
    > String com o tipo do frame, padrão ("Std. Data"), estendido ("Ext. Data") ou "No frame" que é usado para indicar que não há novos frames nos buffers de entrada do MCP2515.
@@ -48,12 +48,12 @@ O frame é a estrutura de dados usados internamente dentro da biblioteca, é com
             CANframe frm();
             frm.id_std = 0x7FF;     
      ```
-     > Declaração de um frame sem fornecer parâmetros de entrada, seguida, na linha de baixo, pela atribuição de 0x7FF para o ID padrão, o maior valor possível, do frame criado acima.
+     Declaração de um frame sem fornecer parâmetros de entrada, seguida, na linha de baixo, pela atribuição de 0x7FF para o ID padrão, o maior valor possível, do frame criado acima.
             
 
 
 * `CANframe(uint8_t *frameBytes, uint8_t extFlag = 0);`
-   > Função para criação de \textit{frame}, a partir de uma lista com todos os \textit{bytes} do \textit{frame}.
+   > Função para criação de frame, a partir de uma lista com todos os \textit{bytes} do \textit{frame}.
 
    * Parâmetros de entrada:
      * **frameBytes** lista com todos os \textit{bytes} do a serem atribuídos ao \textit{frame}. 
