@@ -17,9 +17,6 @@ A principal referencia desta biblioteca é o datasheet [MCP2515 Stand-Alone CAN 
 Por questões de comodidade muitos dos códigos numéricos relacionados a comunicação do MCP2515 com a plataforma Arduino foram expressos em hexadecimal.
 
 ## Frames
-```C+
-uint16_t id_std;
-```
 
 ### Variáveis de um frame
 * `uint16_t id_std;`
