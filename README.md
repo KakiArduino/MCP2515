@@ -7,18 +7,29 @@
 ¹ [IMEF](https://imef.furg.br/) - Universidade Federal do Rio Grande <br /> 
 ² [Física](http://cursos.unipampa.edu.br/cursos/licenciaturaemfisica/) - Unipampa Bagé <br /> 
 
-\chapter{Biblioteca MCP2515}\label{MCP2515_bib}
-
 A biblioteca MCP2515 foi feita para auxiliar/facilitar o controle do CI da Microchip, de mesmo nome, por plataformas Arduino, ou compatíveis.
 As funções de configuração possuem valores padrão, de modo a fornecer uma configuração simples e rápida, porém está é limitada.
-O CI MCP2515 configurado no modo padrão dessa biblioteca estará preparado para operar em uma rede de \SI{125}{\kilo / \bit \second}, sem a implementação de filtros de aceitança nos \textit{buffers} de entrada, com \textit{rollover} do \textit{buffer} de saída RXB0 para o RXB1, e além disso são habilitadas interrupções de recebimento e sucesso de envio.
-Para setar outra configuração o usuário pode utilizar as funções \textbf{confMode()} \ref{bibMCP_confMode}, \textbf{confRX()} \ref{bibMCP_confRX}, \textbf{confRX()} \ref{bibMCP_confRX}, \textbf{confTX()} \ref{bibMCP_confTX} e \textbf{confINT()} \ref{bibMCP_confINT}.
-Ou ainda as funções de escrita básica, \textbf{write(...)} e \textbf{bitModify(...)}.
+O CI MCP2515 configurado no modo padrão dessa biblioteca estará preparado para operar em uma rede de 125 k bit/s, sem a implementação de filtros de aceitança nos buffers de entrada, com rollover do buffer de saída RXB0 para o RXB1, e além disso são habilitadas interrupções de recebimento e sucesso de envio.
+Para setar outra configuração o usuário pode utilizar as funções confMode(), confRX(), confRX(), confTX() e confINT().
+Ou ainda as funções de escrita básica, write(...) e bitModify(...).
 
-A biblioteca foi construída, ou ao menos tentou-se, com a abstração de objeto orientado, além disso grande parte dos parâmetros de entrada e das variáveis de saída são to tipo \textbf{uint8\_t}, ou listas de elementos do mesmo tipo.
-
-A principal referencia desta biblioteca é o \textit{datasheet} \href{http://ww1.microchip.com/downloads/en/DeviceDoc/MCP2515-Stand-Alone-CAN-Controller-with-SPI-20001801J.pdf}{MCP2515 Stand-Alone CAN Controller with SPI Interface}.
+A principal referencia desta biblioteca é o datasheet [http://ww1.microchip.com/downloads/en/DeviceDoc/MCP2515-Stand-Alone-CAN-Controller-with-SPI-20001801J.pdf](MCP2515 Stand-Alone CAN Controller with SPI Interface).
 Por questões de comodidade muitos dos códigos numéricos relacionados a comunicação do MCP2515 com a plataforma Arduino foram expressos em hexadecimal.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 \section{\textit{Frames}}\label{bibMCP2515_frames}
 
