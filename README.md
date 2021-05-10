@@ -16,31 +16,14 @@ Ou ainda as funções de escrita básica, *write(...)* e *bitModify(...)*.
 A principal referencia desta biblioteca é o datasheet [MCP2515 Stand-Alone CAN Controller with SPI Interface](http://ww1.microchip.com/downloads/en/DeviceDoc/MCP2515-Stand-Alone-CAN-Controller-with-SPI-20001801J.pdf).
 Por questões de comodidade muitos dos códigos numéricos relacionados a comunicação do MCP2515 com a plataforma Arduino foram expressos em hexadecimal.
 
+## Frames
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-\section{\textit{Frames}}\label{bibMCP2515_frames}
-
-
-\subsection{Variáveis de um \textit{frame}}
-
-\begin{itemize}
-    \item \mint{C++}{uint16_t id_std;}
+### Variáveis de um frame
+* '<uint16_t id_std;>'
     Variável de \num{2} \textit{bytes} que armazena o valor do ID padrão do \textit{frame}.
-    
-    \item \mint{C++}{uint32_t id_ext;}
+
+* \item \mint{C++}{uint32_t id_ext;}
     Variável de \num{4} \textit{bytes} que armazena o valor da extensão do ID do \textit{frame}.
     
     \item \mint{C++}{uint8_t dlc;}
