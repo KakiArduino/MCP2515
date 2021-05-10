@@ -2,96 +2,145 @@
  * http://ww1.microchip.com/downloads/en/DeviceDoc/MCP2515-Stand-Alone-CAN-Controller-with-SPI-20001801J.pdf
  *
 */
-
-//guarda de inclusao, evita duplo chamamento pelo usr final
 #ifndef MCP2515_1_h
 #define MCP2515_1_h
-
 #include <Arduino.h>
 #include <SPI.h>
 
+typedef union {
+ uint16_t u16;
+ uint32_t u32;
+ uint8_t bytes[4];
+} IDunion_t;
+
+const String werr = "Reg writing error";
+
+struct CANframe{
+  uint16_t id_std = 0;
+  uint32_t id_ext = 0;
+  uint8_t dlc = 0;
+  uint8_t data[8] = {0,0,0,0,0,0,0,0};
+  uint8_t bts[14] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+  String type = "Unknown";
+
+ CANframe();
+
+ CANframe(uint8_t *frameBytes, uint8_t extFlag = 0);
+ void reload(uint8_t *frameBytes, uint8_t extFlag = 0);
+
+ CANframe(uint16_t idstd, uint32_t idext, uint8_t dlc_, uint8_t *data);
+ void reload(uint16_t idstd, uint32_t idext, uint8_t dlc_, uint8_t *data);
+
+ CANframe(uint16_t idstd, uint8_t dlc_, uint8_t *data);
+ void reload(uint16_t idstd, uint8_t dlc_, uint8_t *data);
+
+ void reload(uint8_t dlc_, uint8_t *data_);
+
+};
 
 class MCP2515{
-     
+
 private:
-     //SPI constantes
-     uint8_t CS;
-     unsigned long int spi_max_speed;
-     uint8_t spi_mode;
-     
-     //CAN
-     uint8_t CLK2515; //em MHz, 8, 16 ou 20, 4 MHz nao ainda nao foi implementado
-     uint16_t CANBDS; 
-     
-     //Constantes do nodo
-     uint32_t ID;
-/*
-     uint8_t rxb0; //valore padrao do 0x60
-     uint8_t rxb1; //valore padrao do 0x70
+  void start();
+  void end();
 
-     uint8_t txb0; //valore padrao do 0x70	
-     uint8_t txb1; //valore padrao do 0x70
-     uint8_t txb2; //valore padrao do 0x70
-     uint8_t intrp; //valore padrao do 0x2B
-     uint8_t intrx;//valor padrao	
-     uint8_t inttx;//valor padrao     
-*/
-     //SPI funcoes de inicializacao
-     void start();
-     void end();
+public:
 
- public:
+   //SPI valores conf.
+   unsigned long int SPI_speed = 10000000;
+   uint8_t SPI_wMode = 0;
+   uint8_t SPI_cs;
 
+   //Valores padrões de configuração do MCP2515
+   uint8_t crystalCLK = 8;
+   uint16_t bitF = 125; // k Hertz
+   uint8_t wMode = 0x00;
 
-     void digaOi(String S = "Ola");
-     
-     String erroLog = "Sem erro";
-     
-     MCP2515(uint32_t ID, uint8_t clk2515, uint8_t cs = 10, unsigned long int speed = 10000000, uint8_t mode = 0);
-     
-     void reset(); // instrucao reset 0xC0
-     
-     void read(uint8_t REG, uint8_t *data, uint8_t n = 1);
-     
-     uint8_t regCheck(uint8_t REG, uint8_t VAL, uint8_t extraMask = 0xFF);  
-     
-     void write(uint8_t REG, uint8_t VAL, uint8_t CHECK = 1);
-     
-     void bitModify(uint8_t REG, uint8_t MASK, uint8_t VAL, uint8_t CHECK = 0);
+   uint8_t RXB0CTRL = 0x66;//whit RollOver to RXB1
+   uint8_t RXB1CTRL = 0x60;
+   uint8_t TXB0CTRL = 0x00;
+   uint8_t TXB1CTRL = 0x00;
+   uint8_t TXB2CTRL = 0x00;
+   uint8_t CANINTE = 0xBF;
+   uint8_t BFPCTRL = 0x0F;
+   uint8_t TXRTSCTRL = 0x00;
 
-     void confRX(uint8_t RXB0 = 0x64, uint8_t RXB1 = 0x60);
-     
-     void confTX(uint8_t TXB0=0x00, uint8_t TXB1=0x00, uint8_t TXB2=0x00);
+   uint8_t CNF1 = 0x00;
+   uint8_t CNF2 = 0x42;
+   uint8_t CNF3 = 0x02;
 
-     void confINT(uint8_t INTRP=0xBF, uint8_t INTRX=0x0F, uint8_t INTTX=0x00);
+   uint16_t MASstd[2] = {0x00, 0x00};//{0x400, 0x400};
+   uint32_t MASext[2] = {0x00, 0x00};
 
-     void conf(uint8_t OPMODE=0x00, uint16_t CANbds=500, uint8_t RESET=1);
+   uint16_t FILstd[6] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00};//0x7FF
+   uint32_t FILext[6] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00};//0x3FFFF
+
+   //Error Loggers
+   String errLog = "no error";
+   String errMode = "Error Active";
+   uint16_t RX0OVR = 0;
+   uint16_t RX1OVR = 0;
+   uint8_t multInt = 0;
+   uint8_t  MERRF = 0;
+   uint8_t  WAKIE = 0;
+   uint8_t TEC = 0;
+   uint8_t REC = 0;
+
+   // frames
+   CANframe frameRXB0;
+   CANframe frameRXB1;
+
+   //funções publicas
+     MCP2515(uint8_t spi_cs, unsigned long int spi_speed = 10000000, uint8_t spi_wMode = 0); //
+
+     void begin();
+
+     void reset();
+
+     void read(uint8_t reg, uint8_t *data, uint8_t n = 1);
+
+     uint8_t regCheck(uint8_t reg, uint8_t val, uint8_t extraMask = 0xFF);
+
+     void write(uint8_t reg, uint8_t val, uint8_t check = 0);
+
+     void bitModify(uint8_t reg, uint8_t mask, uint8_t val, uint8_t check = 0);
+
+     void confMode();
+
+     void confRX();
+
+     void confTX();
+
+     void confINT();
+
+     void confCAN();
+
+     void confFM();
 
      void status(uint8_t *status);
-     
-     void errorCont(uint8_t *cont);
-     
-     void writeID(uint32_t ID, uint8_t TXBUFF = 3, uint8_t timeOut = 10, uint8_t CHECK = 1);
-     
+
+     void RXstatus(uint8_t *status);
+
+     void errCount();
+
+     void writeID(uint16_t sid, uint8_t id_ef = 0, uint32_t eid = 0, uint8_t txb = 0, uint8_t timeOut = 10, uint8_t check = 0);
+
      void loadTX(uint8_t *data, uint8_t n = 8,  uint8_t abc = 1);
-     
-     void writeDATA(uint8_t n, uint8_t *data, uint8_t TXB = 0, uint8_t timeOut = 10, uint8_t CHECK = 1);
-     
-     void send(uint8_t TXbuff = 0x01);
 
-     uint8_t checkDATA();
+     void send(uint8_t txBuff = 0x01);
 
-     void readID(uint8_t *ID, uint8_t RXB = 0);
+     void writeFrame(CANframe frameToSend, uint8_t txb = 0, uint8_t timeOut = 10, uint8_t check = 0);
 
-     void readDATA(uint8_t *RXB0, uint8_t *RXB1);
-     
+     void abort(uint8_t abortCode = 7);
+
+     void readID(uint8_t *id, uint8_t rxb = 0);
+
+     void readFrame();
+     void quickread();
+
+     void digaOi(); //char S = "Ola"
+     void digaOi(char *oi);
 };
 
 
-/* Lista de Abreviaturas:
- * 
- * Register (registro)   REG
- * Chip Select           CS 
- * 
-*/
 #endif
