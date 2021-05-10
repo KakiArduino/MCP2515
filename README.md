@@ -53,10 +53,10 @@ O frame é a estrutura de dados usados internamente dentro da biblioteca, é com
 
 
 * `CANframe(uint8_t *frameBytes, uint8_t extFlag = 0);`
-   > Função para criação de frame, a partir de uma lista com todos os \textit{bytes} do \textit{frame}.
+   > Função para criação de frame, a partir de uma lista com todos os bytes do frame.
 
    * Parâmetros de entrada:
-     * **frameBytes** lista com todos os \textit{bytes} do a serem atribuídos ao \textit{frame}. 
+     * **frameBytes** lista com todos os bytes do a serem atribuídos ao frame. 
 
      * **extFlag** sinalizador de extensão de ID, se 0  o frame é padrão, se 1 é estendido.
     
