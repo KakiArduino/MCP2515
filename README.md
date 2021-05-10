@@ -20,25 +20,24 @@ Por questões de comodidade muitos dos códigos numéricos relacionados a comuni
 
 
 ### Variáveis de um frame
-* `<uint16_t id_std;>`
+* `uint16_t id_std;`
    > Variável de 2 bytes que armazena o valor do ID padrão do  frame.
 
-* \item \mint{C++}{uint32_t id_ext;}
-    Variável de \num{4} \textit{bytes} que armazena o valor da extensão do ID do \textit{frame}.
+* `uint32_t id_ext;`
+   > Variável de \num{4} \textit{bytes} que armazena o valor da extensão do ID do \textit{frame}.
     
-    \item \mint{C++}{uint8_t dlc;}
-    Variável de \num{1} \textit{byte} que armazena o código de comprimento, número de \textit{bytes} de dados, do \textit{frame}.
+* `uint8_t dlc;`
+   > Variável de \num{1} \textit{byte} que armazena o código de comprimento, número de \textit{bytes} de dados, do \textit{frame}.
     
-    \item \mint{C++}{uint8_t data[8];}
-    Lista de \textit{bytes} de dados do \textit{frame}.
+* `uint8_t data[8];`
+   > Lista de \textit{bytes} de dados do \textit{frame}.
     
-    \item \mint{C++}{uint8_t bts[14];}
-    Lista com todos os \textit{bytes} do \textit{frame}.
+* `uint8_t bts[14];`
+   > Lista com todos os \textit{bytes} do \textit{frame}.
     
-    \item \mint{C++}{String type = "Unknown";}
-    \textit{String} com o tipo do \textit{frame}, padrão ("Std. Data"), estendido ("Ext. Data") ou "No frame" que é usado para indicar que há novos frames nos \textit{buffers} de entrada do MCP2515.
-    
-\end{itemize}
+* `String type = "Unknown";`
+   > String com o tipo do frame, padrão ("Std. Data"), estendido ("Ext. Data") ou "No frame" que é usado para indicar que não há novos frames nos buffers de entrada do MCP2515.
+
 
 
 \subsection{\textbf{CANframe()}}
