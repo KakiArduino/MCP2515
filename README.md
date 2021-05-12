@@ -16,7 +16,7 @@ Também é possível obter os dados acessando diretamente os registros correspon
 De forma análoga pode-se escrever nos buffers de saída do MCP2515 e solicitar o envio usando as funções de escrita básicas.
 
 <div id='frame'/> 
-![Frame](FURGCAN_frame.png?raw=true)
+![Frame](MCP2515/FURGCAN_frame.png)
 
 A principal referência desta biblioteca é o datasheet [MCP2515 Stand-Alone CAN Controller with SPI Interface](http://ww1.microchip.com/downloads/en/DeviceDoc/MCP2515-Stand-Alone-CAN-Controller-with-SPI-20001801J.pdf).
 Por questões de comodidade muitos dos códigos numéricos relacionados a comunicação do MCP2515 com a plataforma Arduino foram expressos em hexadecimal indicado por 0x, e quando não estarão em decimal.
