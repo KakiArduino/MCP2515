@@ -214,17 +214,103 @@ frm.reload(4, data);
 
 ### SPI
 
+* `unsigned long int SPI_speed = 10000000;`<br/>
+Máxima frequência do clock do SPI usado na comunicação entre o Arduino e o MCP2515, que é limitada pelo último em 10 M Hz. O valor praticado pelo Arduino é definido em função do seu clock interno e do limite fornecido em *SPI_speed*.
+    
+* `uint8_t SPI_wMode = 0;`<br/>
+Modo de operação da comunicação SPI entre o Arduino e o MCP2515, o controlador CAN suporta dois modos o [0,0] (0) e o [1,1] (3).
+    
+ * `uint8_t SPI_cs;`<br/>
+Número do pino do Arduino usado como *chip select* na comunicação SPI entre o Arduino e o MCP2515.
+
 <div id='MCP_var_conf'/>  
 
 ### Configurações gerais do MCP2515
+
+ * `uint8_t crystalCLK = 8;`<br/>
+Frequência do oscilador que fornece a base de clock para o MCP2515, em mega hertz (M Hz).
+    
+ * `uint16_t bitF = 125;`<br/>
+Taxa de bits do barramento, em k bit/s.
+    
+ * `uint8_t wMode = 0x00;`<br/>
+Está variável é usada para manipular o registro 0x0F do controlador CAN, 0x00 é modo de operação padrão da biblioteca, modo de operação *Normal*, encerra a solicitação para cancelar o envio de todas as transmissões, modo *One-Shot* desabilitado, pino *CLKOUT* do MCP25 desabilitado e seta o *CLKOUT = System Clock/1*.
+Para outras opções consultar o [datasheet](http://ww1.microchip.com/downloads/en/DeviceDoc/MCP2515-Stand-Alone-CAN-Controller-with-SPI-20001801J.pdf).
+    
+* `uint8_t RXB0CTRL = 0x66;`<br/>
+Está variável é usada para manipular o registro 0x60 do MCP2515, ele configura o buffer de entrada *RXB0*.
+O valor padrão 0x66, desabilita as mascaras e filtros e ativa o rollover do buffer de entrada *RXB0* para o *RXB1*.
+    
+* `uint8_t RXB1CTRL = 0x60;`<br/>
+Está variável é usada para manipular o registro de configuração do buffer de saída *RXB1* do MCP2515 (0x70).
+O valor padrão 0x60, desabilita as mascaras e filtros.
+        
+    
+* `uint8_t TXB0CTRL = 0x00;`<br/>
+Está variável manipula o registro 0x30, que corresponde a configuração do buffer de saída *TXB0* do MCP2515.
+O valor padrão 0x00, atribui o nível mais baixo de prioridade (0) e aborta possível frame alocado buffer *TXB0*.
+ > Obs.: Quando todos os buffers de saída possuem a mesma prioridade o, o TXB0 se torna o menos prioritário.
+    
+* `uint8_t TXB1CTRL = 0x00;`<br/>
+Está variável manipula o registro 0x40, que corresponde a configuração do buffer de saída *TXB1* do MCP2515.
+O valor padrão 0x00, atribui o nível mais baixo de prioridade (0) e aborta possível frame alocado buffer *TXB0*.
+> Obs.: Quando todos os buffers de saída possuem a mesma prioridade, o *TXB1* se torna mais prioritário do que o *TXB0* e menos prioritário do que o *TXB2*.
+        
+* `uint8_t TXB2CTRL = 0x00;`<br/>
+Está variável manipula o registro 0x50, que corresponde a configuração do buffer de saída *TXB2* do MCP2515.
+O valor padrão 0x00, atribui o nível mais baixo de prioridade (0) e aborta possível frame alocado buffer *TXB0*.
+> Obs.: Quando todos os buffers de saída possuem a mesma prioridade, o *TXB2* se torna o mais prioritário.
+        
+* `uint8_t CANINTE = 0xBF;`<br/>
+Está variável manipula o registro 0x2B do MCP2515.
+O valor padrão 0xBF no registro 0x2B habilita interrupções, quando uma mensagem é recebida no *RXB0* ou no *RXB1*, quando qualquer um dos buffers de saída  (*TXB0*, *TXB1* e *TXB2*) ficar vazio, quando ocorrer erros de múltiplas fontes indicadas no registro *EFLG* do MCP2515, e quando uma transmissão de mensagem for interrompida.
+    
+* `uint8_t BFPCTRL = 0x0F;`<br/>
+Está variável manipula o registro 0x0C do MCP2515.
+O valor padrão 0x0F no registro 0x0C configura os pinos do MCP2515, o *RX0BF* é habilitado e configurado como interrupção que indica quando uma nova mensagem valida é carregado no *RXB0*, e de forma análoga o *RX1BF* é configurado para o buffer *RXB1*. 
+    
+* `uint8_t TXRTSCTRL = 0x00;`<br/>
+Está variável manipula o registro 0x0D do MCP2515.
+O valor padrão \textit{0x00} não habilita nenhum interrupção com relação os pinos TX0RTS, TX1RTS e TX2RTS.        
+        
+* `uint8_t CNF1 = 0x00;`<br/>
+Está variável salva o valor grava no registro 0x2A do MCP2515, ele faz parte da configuração do Bit-Timing.
+Há algumas opções pré definidas, estas podem ser configuradas atribuindo valores as variáveis *crystalCLK* e *bitF*, e dessa forma as variáveis *CNF1*, *CNF2* e *CNF3* são atualizadas durante a inicialização feita pela função *begin()* ou pela função de configuração específica, *confCAN()*.
+
+Os casos pré-definidos são: 
+1. crystalCLK = 4: com duas possíveis taxas 125 k bit/s e 250 kilo bit/s.
+
+2. crystalCLK} = 8: com três possíveis taxas 125 kilo  bit/s, 250 kilo bit/s e 500 kilo bit/s.
+
+3. crystalCLK = 20: com quatro possíveis taxas 125 kilo bit/s, 250 kilo bit/s, 500 kilo bit/s e 1000 kilo bit/s.
+
+Para outros casos deve-se alterar *CNF1* diretamente, mais detalhes consultar o [datasheet](http://ww1.microchip.com/downloads/en/DeviceDoc/MCP2515-Stand-Alone-CAN-Controller-with-SPI-20001801J.pdf).
+    
+* `uint8_t CNF2 = 0x42;`<br/>
+Está variável salva o valor gravado no registro 0x29 do MCP2515. 
+Sua configuração segue de forma análoga a da varaiável *CNF1*.
+
+* `uint8_t CNF3 = 0x02;`<br/>
+        Está variável salva o valor grava no registro 0x28 do MCP2515.
+Sua configuração segue de forma análoga a da varaiável *CNF1*.
+
+
 
 <div id='MCP_var_filMask'/>  
 
 ### Filtros e Mascaras
 
+
+
+
+
+
 <div id='MCP_var_erros'/>  
 
 ### Erros
+
+
+
 
 <div id='MCP_var_frm'/>  
 
