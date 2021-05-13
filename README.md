@@ -521,31 +521,81 @@ if(check == 0){
 > Se o MCP2515 estiver no modo de configuração o valor do registro 0x0F, após aplicação da mascara 0xE0, deve ser 0x80.
 
 
+### Escrita em regisitros
+
+<div id='MCP_fun_write'/>  
+
 * `mcp.write(uint8_t REG, uint8_t VAL, uint8_t CHECK = 1);`<br/>
+A função *write(...)* escreve o byte *VAL* no registro *REG* e pode verifica se o valor foi realmente escrito. 
+O sucesso pode ser verificado na variável *errLog*, no caso de falha ela valerá "Erro na escrita", se seu valor for "Reg invalido", o registro *REG* não pode ser escrito. 
+A checagem da escrita é opcional, e por padrão é feita, para que ela não seja feita basta fornecer 0 para *check*. Desabilitar a checagem fará com que a rotina *write(...)* execute em menos tempo, visto que não será feita a checagem.
+A seguir a descrição dos parâmetros de entrada da função *write(...)*, e dois exemplos de utilização, com e sem verificação de escrita.
+> Obs.: Há alguns registros que só podem ser escritos se o MCP2515 estiver no modo de configuração.
+
 
 Parâmetros de entrada:
-1. ** **:
-2. ** **:
-3. ** **:
+1. **REG**: é o endereço do registro do MCP2515 para escrita. Deve ter um tamanho de 1 byte e seu valor vai 0x0 (0) até 0x80 (128).
+2. **VAL**: é o byte que se deseja escrever em *REG*. Deve ter o tamanho de 1 byte.
+3. **check**: é a sinalização de checagem, se fornecido 1 para *check* a função *write(...)* realizará a checagem, se fornecido 0 a função *write(...)* não realizará a checagem. Por padrão a checagem é feita.
 
 Exemplo de uso:
+
+Escrevendo no registro 0x36 com verificação automática.
+
 ```C++
-
+mcp.write(0x36, 0xFE);
+if(errLog=="Erro na escrita"){
+    Serial.println(mcp.errLog)
+}
+}
 ```
+> Neste exemplo o byte 0xFE é escrito no registro 0x36.
+> Por padrão a função *write(...)* verifica o sucesso da escrita, o que é feito comparando o valor da variável *errLog*.
+> O registro 0x36 pertence ao buffer de saída *TXB1* do MCP2515.
+
+Escrevendo no registro 0x36 sem verificação.
+
+```C++
+mcp.write(0x36, 0xFE, 0);
+```
+> Desta vez a checagem é desabilitada informando o valor 0 para o parâmetro *check*.
 
 
+
+### Alteração de bits em registros
+
+<div id='MCP_fun_bitModify'/>  
 
 * `mcp.bitModify(uint8_t REG, uint8_t MASK, uint8_t VAL, uint8_t check = 0);`<br/>
 
+A função *bitModify(...)* é usada para alterar valores de bits específicos no registro *REG* do MCP2515.
+Para tal deve-se fornecer um mascara (MASK, 1 byte) capaz de selecionar os bits que se deseja modificar pela operação lógica *&* (and). 
+
 Parâmetros de entrada:
-1. ** **:
-2. ** **:
-3. ** **:
 
-Exemplo de uso:
+1. **REG**: é o endereço do registro do MCP2515, onde se quer alterar valores de bits. Deve ter um tamanho de 1 byte e seu valor vai 0x0 (0) até 0x80 (128).
+2. **MASK**: é a mascara para selecionar a posições de bits que deseja-se modificar. Os bits são selecionados pela operação lógica é a *&* (and). Deve ter 1 byte de tamanho.
+3. **VAL**:  é o byte que contem o valor dos bits a serem escritos no registro *REG*. Deve ter 1 byte de tamanho.
+4. **check**:  é a sinalização de checagem, para está função o padrão é não checar e por isso *check = 0*. Caso queira verificar o sucesso da alteração dos bits fornece 1 para check, a habilitação da checagem prolonga o tempo de execução.
+
+Exemplos de uso:
+
+Setar o modo de operação *Listen-Only*
 ```C++
-
+mcp.bitModify(0x0F, 0xE0, 0x60);
 ```
+> Neste exemplo o MCP2515 é setado no modo *Listen-Only*, alterando o valor dos três bits mais significantes do registro 0x0F, com a mascara 0xE0, para 0 1 1.
+
+Setar o modo de operação \textit{Sleep}
+```C++
+mcp.bitModify(0x0F, 0xE0, 0x20, 1);
+```
+> Desta vez o MCP2515 é setado para o modo *Sleep*, alterando os três bits mais significantes do registro 0x0F para 0 1 0. Além disso é feita a verificação fornecendo 1 para o parâmetro *check*.
+
+
+### Configuração do modo de operação
+
+<div id='MCP_fun_conf'/>  
 
 * `mcp.confMode();`<br/>
 
