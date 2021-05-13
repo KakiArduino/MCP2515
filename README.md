@@ -598,7 +598,6 @@ mcp.bitModify(0x0F, 0xE0, 0x20, 1);
 <div id='MCP_fun_conf'/>  
 
 * `mcp.confMode();`<br/>
-* 
 A função *confMode()* atua sobre o registro 0x0F do MCP2515, nele pode configurar o modo de operação do controlador CAN e outras funções, para mais detalhes consulte o registro CANCTRL no [datasheet](http://ww1.microchip.com/downloads/en/DeviceDoc/MCP2515-Stand-Alone-CAN-Controller-with-SPI-20001801J.pdf). A variável *wMode* guarda o valor a ser gravado no registro *CANCRL*, se este valor já estiver configurado, e a função for chamada, o MCP2515 é setado para o modo de configuração, no qual se pode alterar registros 'protegidos'. Se o MCP2515 estiver no modo de configuração, a função retorna ao modo *wMode*.
 
 Exemplo de uso:
@@ -786,7 +785,7 @@ mcp.writeID(10, 0, 0, 1, 0);
 > Desta vez, o ID padrão escrito no buffer de saída TXB1 o valor 10, sem extensão de ID e sem time out.
 
 
-### Carregar os registros dos sáida 
+### Carregar os bytes nos registros de sáida 
 
 <div id='MCP_fun_loadtx'/>  
 
@@ -951,7 +950,7 @@ Serial.println();
 > O processo feito para impressão do RXB0, a partir do *if(...)*, pode ser feito para o *RXB1*, trocando o *frameRXB0* por *frameRXB1*.
 
 
-### Função figaOi
+### Função digaOi
 
 <div id='MCP_fun_Oi'/> 
 
