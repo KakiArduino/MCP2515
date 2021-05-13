@@ -278,11 +278,12 @@ Está variável salva o valor grava no registro 0x2A do MCP2515, ele faz parte d
 Há algumas opções pré definidas, estas podem ser configuradas atribuindo valores as variáveis *crystalCLK* e *bitF*, e dessa forma as variáveis *CNF1*, *CNF2* e *CNF3* são atualizadas durante a inicialização feita pela função *begin()* ou pela função de configuração específica, *confCAN()*.
 
 Os casos pré-definidos são: 
-1. *crystalCLK* = 4: com duas possíveis taxas 125 k bit/s e 250 kilo bit/s.
+1. *crystalCLK* = 4: com duas possíveis taxas 125 k bit/s e 250 k bit/s.
 
-2. *crystalCLK* = 8: com três possíveis taxas 125 kilo  bit/s, 250 kilo bit/s e 500 kilo bit/s.
+2. *crystalCLK* = 8: com três possíveis taxas 125 k bit/s, 250 k bit/s e 500 k bit/s.
+> As distancias estimas foram calculadas (não testadas) para o cristal de 8 M Hz, como sendo de até 275 m para 125 k bit/s, 125 m para 250 k bit/s e 50 m para 500 k bit/s.
 
-3. *crystalCLK* = 20: com quatro possíveis taxas 125 kilo bit/s, 250 kilo bit/s, 500 kilo bit/s e 1000 kilo bit/s.
+3. *crystalCLK* = 20: com quatro possíveis taxas 125 k bit/s, 250 k bit/s, 500 k bit/s e 1000 k bit/s.
 
 Para outros casos deve-se alterar *CNF1* diretamente, mais detalhes consultar o [datasheet](http://ww1.microchip.com/downloads/en/DeviceDoc/MCP2515-Stand-Alone-CAN-Controller-with-SPI-20001801J.pdf).
     
