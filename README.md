@@ -808,7 +808,7 @@ mcp.loadTX(data, 8, 1);
 > Neste exemplo a sequencia de 8 bytes armazenada na lista data é sequencialmente escrita nos registros que armazenam os dados da mensagem a ser enviada pelo buffer TXB0 (do 0x36 até o 0xD).
 
 
-### Função de envio
+### Solicitação de envio
 
 <div id='MCP_fun_loadtx'/>  
 
