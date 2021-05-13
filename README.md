@@ -411,11 +411,11 @@ MCP2515 mcp(7, 10000000, 3);
 
 ### Inicialização e configuração
 
-<div id='MCP_fun_mcp'/>  
+<div id='MCP_fun_begin'/>  
 
 * `mcp.begin();`<br/>
 A função *begin()* inicializa a comunicação SPI entre o Arduino e o MCP2515, e configura o controlador CAN para operar de acordo com os valores setados nas variáveis de configuração.
-As variáveis de configuração, bem como seus valores padrões, foram descritas na secção anterior em [Configurações gerais do MCP2515](#MCP_var_conf) .
+As variáveis de configuração, bem como seus valores padrões, foram descritas na secção anterior em [Configurações gerais do MCP2515](#MCP_var_conf).
 
 Exemplos de uso:
 
@@ -616,36 +616,35 @@ mcp.confMode();
 
 <div id='MCP_fun_confRX'/>  
 
-
 * `mcp.confRX();`<br/>
-
-Parâmetros de entrada:
-1. ** **:
-2. ** **:
-3. ** **:
+Esta função manipula os registros 0x60 e 0x70 do MCP2515, estes valores são definidos pelas variáveis de controle *RXB0CTRL* e *RXB1CTRL*, por padrão e respectivamente, 0x66 e 0x60.
 
 Exemplo de uso:
 ```C++
-
+mcp.RXB1CTRL = 0x00;
+mcp.confRX();
 ```
-
+>  Neste exemplo é setado o valor 0x00 no registro 0x70 (*RXB1CTRL*) do MCP2515, este valor habilita os filtros e mascaras no buffer de saída *RXB1* do MCP2515.
 
 
 ### Configuração dos buffers de sáida
 
-<div id='MCP_fun_confTX'/>  
+<div id='MCP_fun_confTX'/> 
 
 * `mcp.confTX();`<br/>
-
-Parâmetros de entrada:
-1. ** **:
-2. ** **:
-3. ** **:
+A função *confTX()* manipula os registros 0x30, 0x40 e 0x50, neles são configurados os buffers de saída do MCP2515, respectivamente, *TXB0*, *TXB1* e *TXB2*.
 
 Exemplo de uso:
-```C++
 
+Configurando a prioridade interna dos buffers de saída do MCP2515.
+```C++
+mcp.TXB0CTRL = 0x03;
+mcp.TXB1CTRL = 0x00;
+mcp.TXB2CTRL = 0x01;
+mcp.confTX();
 ```
+> Neste exemplo o *TXB0* é configurado com a mais alta prioridade, enquanto o TXB1 e configurado no nível mais baixo, e por fim o *TXB2* é setado no nível 1 de prioridade. 
+> Existem quatro níveis de prioridade.
 
 
 ### Configuração das interrrupções
@@ -653,50 +652,65 @@ Exemplo de uso:
 <div id='MCP_fun_confINT'/>  
 
 * `mcp.confINT();`<br/>
-
-Parâmetros de entrada:
-1. ** **:
-2. ** **:
-3. ** **:
+A função *confINT()* configura os registros 0x2B, 0x0C e 0x0D do MCP2515, através das variáveis de controle e respectivamente, *CANINTE*, *BFPCTRL* e *TXRTSCTRL*. 
+Outros valores podem ser consultados no [datasheet](http://ww1.microchip.com/downloads/en/DeviceDoc/MCP2515-Stand-Alone-CAN-Controller-with-SPI-20001801J.pdf).
 
 Exemplo de uso:
+
+Configurações padrões.
 ```C++
-
+mcp.CANINTE = 0xBF;
+mcp.BFPCTRL = 0x0F;
+mcp.TXRTSCTRL = 0x00;
+mcp.confINT();
 ```
-
+> Neste exemplo a função *confINT()* é chamada na ultima linha, após a atribuição das três variáveis de controle correspondentes aos registros manipulados pela a função.
+> Mas detalhes sobre as variáveis em [Configurações gerais do MCP2515](#MCP_var_conf).
+             
 
 ### Configuração dos Filtros e Mascaras
 
 <div id='MCP_fun_confFM'/>  
 
 * `mcp.confFM();`<br/>
-
-Parâmetros de entrada:
-1. ** **:
-2. ** **:
-3. ** **:
+A função *confFM()* configura os valores das mascaras e filtros de ID, padrão e extensão, nos *buffers* de entrada do MCP2515.
 
 Exemplo de uso:
 ```C++
-
+mcp.MASstd[0] = {0x400};
+mcp.MASstd[1] = {0x400};
+mcp.FILstd[0] = {0x7FF};
+mcp.FILstd[1] = {0x7FF};
+mcp.FILstd[2] = {0x7FF};
+mcp.FILstd[3] = {0x7FF};
+mcp.FILstd[4] = {0x7FF};
+mcp.FILstd[5] = {0x7FF};
+mcp.FILstd[6] = {0x7FF};
+mcp.confFM();
 ```
+> Neste exemplo as mascaras e filtros são setados através da atribuição das variáveis de configuração relacionadas, no caso especifico o MCP2515 só aceitara frames padrão, cujo valor do ID padrão seja maior que 0x400.
+> Mais detalhes do funcionamento dos filtros e mascaras do controlador CAN podem ser vistas no [datasheet](http://ww1.microchip.com/downloads/en/DeviceDoc/MCP2515-Stand-Alone-CAN-Controller-with-SPI-20001801J.pdf).
 
 ### Configuração da Taxas de bits por segundo
 
 <div id='MCP_fun_confCAN'/>  
 
 * `mcp.confCAN();`<br/>
-
-Parâmetros de entrada:
-1. ** **:
-2. ** **:
-3. ** **:
+A função *confCAN()* configura a taxa de operação do CI MCP2515, para isso ela manipula os registros relacionados ao Bit-Timing do controlador CAN.
 
 Exemplo de uso:
 ```C++
-
+mcp.crystalCLK = 8; // M Hz
+mcp.bitF = 125; // k bit/s
+mcp.confCAN();
 ```
+> Na primeira linha é atribuído o valor de 8 para a variável de configuração *crystalCLK*, deve ser informado nesta variável o valor do clock fornecido ao controlador CAN MCP2515.
+> Também é atribuído, na segunda linha, o valor da variável de configuração *bitF*, que contem a taxa de transferência de bits utilizada no barramento CAN.
+> Na última linha é chamada a função *confCAN()*, que realiza a configuração dos registros 0x2A, 0x29 e 0x28, os valores gravados podem ser consultados respectivamente, após a função *confCAN()*, nas variáveis de configuração CNF1, CNF2 e CNF3.
 
+### Status
+
+<div id='MCP_fun_status'/>  
 
 * `mcp.status(uint8_t *status);`<br/>
 
