@@ -921,7 +921,7 @@ Serial.print(' ');
 Serial.println(IDext);
 ```
 
-### Leitura de ID
+### Leitura de frames
 
 <div id='MCP_fun_readFrame'/> 
 
