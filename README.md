@@ -66,36 +66,39 @@ Sumário:
 
 ## Variáveis de um frame
 
-### ID padrão
-* `uint16_t id_std;`<br/>
- Variável de 2 bytes que armazena o ID padrão do frame.
-
-### Extensão de ID
-* `uint32_t id_ext;`<br/>
- Variável de 4 bytes que armazena a extensão de ID do frame.
-
-### Código de comprimento de dados - DLC
-* `uint8_t dlc;`<br/>
-Variável de 1 byte que armazena o código de comprimento, número de bytes de dados no frame
-
-### Dados
-* `uint8_t data[8];`<br/>
-Lista com os bytes (de 1 a 8) de dados do frame.
- 
-### Bytes 
-* `uint8_t bts[14];`<br/>
-Lista com todos (no máximo 14) os bytes do frame.
- 
 ### Tipo de frames 
 * `String type = "Unknown";`<br/>
 String com o tipo do frame, padrão ("Std. Data"), estendido ("Ext. Data") ou "No frame" que é usado para indicar que há novos frames nos buffers de entrada do MCP2515.
+
+### Bytes
+
+<div id='frames_var_bts'/> 
+
+* `uint8_t bts[14];`<br/>
+Lista com todos (no máximo 14) os bytes do frame, no formato apresentado na figura [Frame](#frame), 2 bytes para o ID padrão, 3 bytes para a extensão de ID, 1 byte para o código de comprimento de dado (DLC - data len code) e de 0 a 8 bytes para o dado. O comprimento da lista pode ser alterar em função do tamanho do dado.
+
+### ID padrão
+* `uint16_t id_std;`<br/>
+Variável de 2 bytes que armazena o ID padrão do frame. Também pode-se construir o valor do ID padrão apartir dos dois primeiros bytes da lista [bts](#frames_var_bts), o `bts[0]` e `bts[1]`.
+
+### Extensão de ID
+* `uint32_t id_ext;`<br/>
+ Variável de 4 bytes que armazena a extensão de ID do frame. Também pode-se construir o valor da extensão de ID apartir dos bytes `bts[2]`, `bts[3]` e `bts[4]` da lista [bts](#frames_var_bts).
+
+### Código de comprimento de dados - DLC
+* `uint8_t dlc;`<br/>
+Variável de 1 byte que armazena o código de comprimento do dado (DLC - data len code), número de bytes de dados no frame. O DLC pode ser encontrado também no `bts[5]` da lista [bts](#frames_var_bts).
+
+### Dados
+* `uint8_t data[8];`<br/>
+Lista com os bytes (de 1 a 8) de dados do frame. Os bytes de dados também pode ser acessados das possições `bts[6]` até `bts[13]` da lista [bts](#frames_var_bts).
 
  
 <div id='frames_fun'/>
 
 ## Declaração de frames
 
-### Frames genericos
+### Frames genéricos
 * `CANframe();`<br/>
 Função para declaração de uma estrutura de variáveis do tipo CANframe sem argumentos.
 
@@ -372,33 +375,75 @@ Variável do tipo *CANframe*, criada para receber os frames recebidos no buffer 
 
 <div id='MCP_fun'/>  
 
-* `mcp.reset(uint8_t spi_cs, unsigned long int spi_speed = 10000000, uint8_t spi_wMode = 0);`<br/>
+### Declaração
+
+<div id='MCP_fun_mcp'/>  
+
+* `mcp.MCP(uint8_t spi_cs, unsigned long int spi_speed = 10000000, uint8_t spi_wMode = 0);`<br/>
+
+A função *MCP2515(...)* criar um objeto MCP2515, que herda as funções da biblioteca MCP2515.
+Todos os parâmetros de entrada da função *MCP2515(...)* são relacionados a comunicação SPI, e são listados abaixo, juntamente de dois exemplos de uso.
 
 Parâmetros de entrada:
-1. ** **:
-2. ** **:
-3. ** **:
+1. **spi_cs**:  é o número do pino do Arduino usado como *chip select* do MCP2515.
+2. **spi_speed**:  é a máxima frequência do \textit{clock} da comunicação SPI, seu valor padrão é 10000000.
+>  Obs.: Esse é o valor máximo suportado pelo MCP2515 e serve apenas como limite superior, a frequência do \textit{clock} é setada automaticamente pelo Arduino, dentro do limite informado.
+3. **spi_wMode**: indica o modo de operação do SPI, o MCP2515 suporta o modo [0,0] e o modo [1, 1], que equivalem respectivamente, o modo 0 e  ao modo 3 do Arduino ([SPI - Arduino](https://www.arduino.cc/en/reference/SPI)). O valor padrão é 0.
 
-Exemplo de uso:
+Exemplos de uso:
+
+Declaração de um objeto \textit{MCP2515}.
 ```C++
-
+#include <MCP2515_1.h>
+MCP2515 mon(4);
 ```
+> Neste exemplo foi, na primeira linha, incluído a versão 1 da biblioteca MCP2515, através do arquivo [MCP2515_1](https://github.com/KakiArduino/MCP2515). 
+> Na segunda linha foi declarado um objeto *MCP2515* chamado *mon*, que tem como *chip select* o pino digital 4 do Arduino.
 
+Outro exemplo de declaração de objeto \textit{MCP2515}.
+```C++
+MCP2515 mcp(7, 10000000, 3);
+```
+> Desta vez foi declarado um objeto chamado **mcp**, que tem como *chip select* o pino digital 7 do Arduino, e usa o modo 3 do SPI do Arduino, que equivale [1, 1].
+
+
+
+### Inicialização e configuração
+
+<div id='MCP_fun_mcp'/>  
 
 * `mcp.begin();`<br/>
+A função *begin()* inicializa a comunicação SPI entre o Arduino e o MCP2515, e configura o controlador CAN para operar de acordo com os valores setados nas variáveis de configuração.
+As variáveis de configuração, bem como seus valores padrões, foram descritas na secção anterior em [Configurações gerais do MCP2515](#MCP_var_conf) .
 
-Parâmetros de entrada:
-1. ** **:
-2. ** **:
-3. ** **:
+Exemplos de uso:
 
-Exemplo de uso:
+Parte inicial da função *void setup()* do exemplo [CANMon.ino](https://github.com/KakiArduino/MCP2515/blob/version_1/example/CANMon/CANMon.ino).
 ```C++
-
+void setup() {
+  Serial.begin(9600);
+  mon.bitF = 125; // k bits/s
+  mon.begin();
 ```
+> Na penúltima linha é setado a taxa de bits para 125 k bit/s, \textbf{bitF} é a variável de controle que armazena o valor da taxa \textit{bits}. 
+> Na última o MCP2515 é inicializado e configurado com a função *mon.begin()*.
+
+Configuração padrão.
+```C++
+sensor.begin();
+```
+> Neste exemplo o MCP2515 é inicializado e configurado no modo padrão, *sensor* é o nome do objeto.
+
+
+# Reset 
+
+<div id='MCP_fun_mcp'/>  
 
 
 * `mcp.reset();`<br/>
+A função *reset()* não possui argumentos, ela reinicia o CI MCP2515 enviando a instrução 0xC0 pela comunicação SPI.
+Atenção ao voltar do reset o CI MCP2515 se encontra em modo de configuração e com valores padrão nos registros, e deve-se esperar algo entorno de 2 micro secondos antes de usa-lo ([datasheet](http://ww1.microchip.com/downloads/en/DeviceDoc/MCP2515-Stand-Alone-CAN-Controller-with-SPI-20001801J.pdf)), isso pode ser feito através da função [**delayMicroseconds()**](https://www.arduino.cc/reference/en/language/functions/time/delaymicroseconds/) do Arduino.
+É aconselhável o uso dessa função logo após a inicialização do CI, e antes de configurá-lo, pois assim tem-se certeza dos valores salvos em seus registros.
 
 Parâmetros de entrada:
 1. ** **:
