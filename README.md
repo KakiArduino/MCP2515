@@ -66,21 +66,27 @@ Sumário:
 
 ## Variáveis de um frame
 
+### ID padrão
 * `uint16_t id_std;`<br/>
  Variável de 2 bytes que armazena o ID padrão do frame.
- 
+
+### Extensão de ID
 * `uint32_t id_ext;`<br/>
  Variável de 4 bytes que armazena a extensão de ID do frame.
 
+### Código de comprimento de dados - DLC
 * `uint8_t dlc;`<br/>
 Variável de 1 byte que armazena o código de comprimento, número de bytes de dados no frame
 
+### Dados
 * `uint8_t data[8];`<br/>
-Lista com os bytes} de dados do frame.
+Lista com os bytes (de 1 a 8) de dados do frame.
  
+### Bytes 
 * `uint8_t bts[14];`<br/>
 Lista com todos (no máximo 14) os bytes do frame.
  
+### Tipo de frames 
 * `String type = "Unknown";`<br/>
 String com o tipo do frame, padrão ("Std. Data"), estendido ("Ext. Data") ou "No frame" que é usado para indicar que há novos frames nos buffers de entrada do MCP2515.
 
@@ -89,6 +95,7 @@ String com o tipo do frame, padrão ("Std. Data"), estendido ("Ext. Data") ou "N
 
 ## Declaração de frames
 
+### Frames genericos
 * `CANframe();`<br/>
 Função para declaração de uma estrutura de variáveis do tipo CANframe sem argumentos.
 
@@ -98,6 +105,7 @@ CANframe frm();
 frm.id_std = 0x7FF;
 ```
 >  Declaração de um frame sem fornecer parâmetros de entrada, seguida, na linha de baixo, pela atribuição de 0x7FF para o ID padrão, o maior valor possível, do frame criado acima.
+
 
 * `CANframe(uint8_t *frameBytes, uint8_t extFlag = 0);`<br/>
 Função para criação de frame, a partir de uma lista com todos os bytes do frame.
@@ -122,6 +130,7 @@ Serial.println(frm.id_std);
 >  Após a declaração da lista com os bytes, é feito a declaração do frame estendido com a lista *frameBytes*.
 >  Por fim o ID padrão é impresso através da variável *id_std* na última linha, isto é possível, pois ao declarar o frame, todos suas variáveis são atribuídas.
 
+### Frames Estendidos
 
 * `CANframe(uint16_t idstd, uint32_t idext, uint8_t dlc_, uint8_t *data);`<br/>
    Função para criação de frame estendido com declaração do ID padrão, extensão de ID, DLC - Data Len Code e uma lista de bytes de dados, **data**.
@@ -142,25 +151,6 @@ CANframe frm(1, 6, 2, data);
 > Na primeira linha é declarada uma lista com os bytes de dados.
 > Seguido, na linha abaixo, da declaração de um frame estendido com ID padrão igual a 1, extensão de ID igual a 6, e com dois bytes de dados (dlc_ = 2), sendo 0 e 10.
 
-
-* `CANframe(uint16_t idstd, uint8_t dlc_, uint8_t *data);`<br/>
-Função para criação de frames padrões, devem ser informados o ID padrão, o DLC, e de uma lista com os bytes dos dados.
-
-<div id='CANframe_pad'/> 
-
-Parâmetros de entrada:
-1. **idstd**: variável de 2 bytes onde deve ser informado o valor do ID padrão do frame, no máximo 0x7FF.
-2. **dlc\_**: número de \textit{bytes} de dados.
-3. **data**:  lista contendo os bytes de dados dos frames.
-
-Exemplo de uso:
-```C++
-uint8_t data[2] = {0, 10};
-CANframe frm(1, 2, data);
-```
-> Na primeira linha é declarada uma lista com os bytes de dados.
-> Seguido, na linha abaixo, da declaração de um frame padrão com ID padrão igual a 1, e com dois bytes de dados (dlc_ = 2), sendo 0 e 10.
-
 * `reload(uint16_t idstd, uint32_t idext, uint8_t dlc_, uint8_t *data);`<br/>
 Função para recarregar um frame qualquer com estendido, atribuindo os valores fornecidos com entrada nas variáveis correspondentes.
 Os parâmetros de entrada são os mesmos, e em mesma ordem, da função [CANframe(idstd, idext, dlc_, data)](#CANframe_ext), descrita um pouco acima.
@@ -174,6 +164,26 @@ frm.reload(1, 10, 2, data);
 > As duas primeiras linhas deste exemplo já foram apresentadas como exemplo para a função [CANframe(idstd, dlc_, data)](#CANframe_pad), descrito anteriormente, nele é criado um frame padrão.
 > Na última linha o frame frm é recarregado como estendido com a função *reload(..)*, a única diferença é a inserção do valor da extensão de ID (10).
 
+
+### Frames Padrão
+
+* `CANframe(uint16_t idstd, uint8_t dlc_, uint8_t *data);`<br/>
+Função para criação de frames padrões, devem ser informados o ID padrão, o DLC, e de uma lista com os bytes dos dados.
+
+<div id='CANframe_pad'/> 
+
+Parâmetros de entrada:
+1. **idstd**: variável de 2 bytes onde deve ser informado o valor do ID padrão do frame, no máximo 0x7FF.
+2. **dlc_**: número de \textit{bytes} de dados.
+3. **data**:  lista contendo os bytes de dados dos frames.
+
+Exemplo de uso:
+```C++
+uint8_t data[2] = {0, 10};
+CANframe frm(1, 2, data);
+```
+> Na primeira linha é declarada uma lista com os bytes de dados.
+> Seguido, na linha abaixo, da declaração de um frame padrão com ID padrão igual a 1, e com dois bytes de dados (dlc_ = 2), sendo 0 e 10.
 
 * `reload(uint16_t idstd, uint8_t dlc_, uint8_t *data);`<br/>
 Função para recarregar um frame qualquer com padrão, atribuindo os valores fornecidos com entrada nas variáveis correspondentes.
@@ -190,12 +200,14 @@ frm.reload(1, 2, data);
 > Na última linha o frame *frm* é recarregado com padrão, com a função *reload(..)*, a diferença é a ausência da extensão de ID.
 
 
+### Somente os dados
+
 * `reload(uint8_t dlc_, uint8_t *data_);`<br/>
 Função para recarregar o campo de dados de frame qualquer, essa função não altera os valores de ID, também pouco o tipo de frame, também é alterado o DLC.
 Essa função pode ser usada em um loop, onde os dados do frame são atualizados periodicamente, mas seus valores de ID não.
 
 Parâmetros de entrada:
-1. **dlc\_**: número de \textit{bytes} de dados.
+1. **dlc_**: número de \textit{bytes} de dados.
 2. **data_**:  lista contendo os bytes de dados dos frames.
 
 Exemplo de uso:
@@ -228,10 +240,10 @@ Número do pino do Arduino usado como *chip select* na comunicação SPI entre o
 <div id='MCP_var_conf'/>  
 
  * `uint8_t crystalCLK = 8;`<br/>
-Frequência do oscilador que fornece a base de clock para o MCP2515, em mega hertz (M Hz).
+Frequência do oscilador que fornece a base de clock para o MCP2515, em mega hertz (M Hz), valor padrão é 8 M Hz. Verifique os valores [pré-definidos](#crystal_pre).
     
  * `uint16_t bitF = 125;`<br/>
-Taxa de bits do barramento, em k bit/s.
+Taxa de bits do barramento, em k bit/s, valor padrão é 125 k bit/s. Verifique os valores [pré-definidos](#crystal_pre).
     
  * `uint8_t wMode = 0x00;`<br/>
 Está variável é usada para manipular o registro 0x0F do controlador CAN, 0x00 é modo de operação padrão da biblioteca, modo de operação *Normal*, encerra a solicitação para cancelar o envio de todas as transmissões, modo *One-Shot* desabilitado, pino *CLKOUT* do MCP25 desabilitado e seta o *CLKOUT = System Clock/1*.
@@ -277,6 +289,7 @@ O valor padrão \textit{0x00} não habilita nenhum interrupção com relação o
 Está variável salva o valor grava no registro 0x2A do MCP2515, ele faz parte da configuração do Bit-Timing.
 Há algumas opções pré definidas, estas podem ser configuradas atribuindo valores as variáveis *crystalCLK* e *bitF*, e dessa forma as variáveis *CNF1*, *CNF2* e *CNF3* são atualizadas durante a inicialização feita pela função *begin()* ou pela função de configuração específica, *confCAN()*.
 
+<div id='crystal_pre'/>  
 Os casos pré-definidos são: 
 1. *crystalCLK* = 4: com duas possíveis taxas 125 k bit/s e 250 k bit/s.
 
