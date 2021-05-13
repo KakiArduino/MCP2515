@@ -358,7 +358,7 @@ Variável do tipo *CANframe*, criada para receber os frames recebidos no buffer 
 
 <div id='MCP_fun'/>  
 
-* ` `<br/>
+* `mcp.reset(uint8_t spi_cs, unsigned long int spi_speed = 10000000, uint8_t spi_wMode = 0);`<br/>
 
 Parâmetros de entrada:
 1. ** **:
@@ -369,3 +369,292 @@ Exemplo de uso:
 ```C++
 
 ```
+
+
+* `mcp.begin();`<br/>
+
+Parâmetros de entrada:
+1. ** **:
+2. ** **:
+3. ** **:
+
+Exemplo de uso:
+```C++
+
+```
+
+
+* `mcp.reset();`<br/>
+
+Parâmetros de entrada:
+1. ** **:
+2. ** **:
+3. ** **:
+
+Exemplo de uso:
+```C++
+
+```
+
+
+* `mcp.read(uint8_t REG, uint8_t *data, uint8_t n = 1);`<br/>
+
+Parâmetros de entrada:
+1. ** **:
+2. ** **:
+3. ** **:
+
+Exemplo de uso:
+```C++
+
+```
+
+* `mcp.regCheck(uint8_t REG, uint8_t VAL, uint8_t extraMask = 0xFF);`<br/>
+
+Parâmetros de entrada:
+1. ** **:
+2. ** **:
+3. ** **:
+
+Exemplo de uso:
+```C++
+
+```
+
+* `mcp.write(uint8_t REG, uint8_t VAL, uint8_t CHECK = 1);`<br/>
+
+Parâmetros de entrada:
+1. ** **:
+2. ** **:
+3. ** **:
+
+Exemplo de uso:
+```C++
+
+```
+
+
+
+* `mcp.bitModify(uint8_t REG, uint8_t MASK, uint8_t VAL, uint8_t check = 0);`<br/>
+
+Parâmetros de entrada:
+1. ** **:
+2. ** **:
+3. ** **:
+
+Exemplo de uso:
+```C++
+
+```
+
+* `mcp.confMode();`<br/>
+
+Parâmetros de entrada:
+1. ** **:
+2. ** **:
+3. ** **:
+
+Exemplo de uso:
+```C++
+
+```
+
+
+* `mcp.confRX();`<br/>
+
+Parâmetros de entrada:
+1. ** **:
+2. ** **:
+3. ** **:
+
+Exemplo de uso:
+```C++
+
+```
+
+* `mcp.confTX();`<br/>
+
+Parâmetros de entrada:
+1. ** **:
+2. ** **:
+3. ** **:
+
+Exemplo de uso:
+```C++
+
+```
+
+
+* `mcp.confINT();`<br/>
+
+Parâmetros de entrada:
+1. ** **:
+2. ** **:
+3. ** **:
+
+Exemplo de uso:
+```C++
+
+```
+
+
+
+* `mcp.confFM();`<br/>
+
+Parâmetros de entrada:
+1. ** **:
+2. ** **:
+3. ** **:
+
+Exemplo de uso:
+```C++
+
+```
+
+
+* `mcp.confCAN();`<br/>
+
+Parâmetros de entrada:
+1. ** **:
+2. ** **:
+3. ** **:
+
+Exemplo de uso:
+```C++
+
+```
+
+
+* `mcp.status(uint8_t *status);`<br/>
+
+Parâmetros de entrada:
+1. ** **:
+2. ** **:
+3. ** **:
+
+Exemplo de uso:
+```C++
+
+```
+
+
+* `mcp.errCont();`<br/>
+
+Parâmetros de entrada:
+1. ** **:
+2. ** **:
+3. ** **:
+
+Exemplo de uso:
+```C++
+
+```
+
+
+* `writeID(uint16_t sid, uint8_t id_ef = 0, uint32_t eid = 0, uint8_t txb = 0, uint8_t timeOut = 10, uint8_t check = 0);`<br/>
+
+Parâmetros de entrada:
+1. ** **:
+2. ** **:
+3. ** **:
+
+Exemplo de uso:
+```C++
+
+```
+
+
+* `mcp.loadTX(uint8_t *data, uint8_t n = 8,  uint8_t abc = 1);`<br/>
+
+Parâmetros de entrada:
+1. ** **:
+2. ** **:
+3. ** **:
+
+Exemplo de uso:
+```C++
+
+```
+
+
+* `mcp.send(uint8_t);`<br/>
+
+Parâmetros de entrada:
+1. ** **:
+2. ** **:
+3. ** **:
+
+Exemplo de uso:
+```C++
+
+```
+
+
+* `writeFrame(CANframe frameToSend, uint8_t txb_ = 0, uint8_t timeOut = 10, uint8_t check = 0)`<br/>
+
+Parâmetros de entrada:
+1. ** **:
+2. ** **:
+3. ** **:
+
+Exemplo de uso:
+```C++
+
+```
+
+* `mcp.abort(uint8_t abortCode = 7);`<br/>
+
+Parâmetros de entrada:
+1. ** **:
+2. ** **:
+3. ** **:
+
+Exemplo de uso:
+```C++
+
+```
+
+* `mcp.readID(uint8_t *id, uint8_t rxb = 0);`<br/>
+
+Parâmetros de entrada:
+1. ** **:
+2. ** **:
+3. ** **:
+
+Exemplo de uso:
+```C++
+
+```
+
+* `mcp.readFrame()`<br/>
+
+Parâmetros de entrada:
+1. ** **:
+2. ** **:
+3. ** **:
+
+Exemplo de uso:
+```C++
+
+```
+
+
+
+* `mcp.digaOi(char *oi);`<br/>
+
+Parâmetros de entrada:
+1. **oi**: é o char que informa quais variáveis serão impressas, se informado "status", será impresso somente as variáveis relacionadas ao estado do MCP2515 e seus buffers de saída e entrada. Se informado "eros" ou "errors", serão impressos valores de erros. Se informado "SPI", serão impressos os parâmetros do SPI. Se informado "CAN", serão impressos os parâmetros da configuração da CAN. Se informado "controle", serão impressos os parâmetros de controle do MCP2515. Se informado "filtros", serão impressos os filtros setados no MCP2515. Se informado "filtros", serão impressos as mascaras setados no MCP2515.
+
+Exemplos de usos:
+
+```C++
+Serial.begin(9600);
+mcp.digaOi();
+```
+> Neste exemplo a função *digaOI()* imprimirá todas as variáveis.
+
+```C++
+Serial.begin(9600);
+mcp.digaOi("error");
+```
+> Exemplo de uso da função *digaOi("error")* imprimindo somente os parâmetros relacionados a erros.
