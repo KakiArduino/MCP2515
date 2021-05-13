@@ -586,7 +586,7 @@ mcp.bitModify(0x0F, 0xE0, 0x60);
 ```
 > Neste exemplo o MCP2515 é setado no modo *Listen-Only*, alterando o valor dos três bits mais significantes do registro 0x0F, com a mascara 0xE0, para 0 1 1.
 
-Setar o modo de operação \textit{Sleep}
+Setar o modo de operação *Sleep*
 ```C++
 mcp.bitModify(0x0F, 0xE0, 0x20, 1);
 ```
@@ -598,16 +598,23 @@ mcp.bitModify(0x0F, 0xE0, 0x20, 1);
 <div id='MCP_fun_conf'/>  
 
 * `mcp.confMode();`<br/>
-
-Parâmetros de entrada:
-1. ** **:
-2. ** **:
-3. ** **:
+* 
+A função *confMode()* atua sobre o registro 0x0F do MCP2515, nele pode configurar o modo de operação do controlador CAN e outras funções, para mais detalhes consulte o registro CANCTRL no [datasheet](http://ww1.microchip.com/downloads/en/DeviceDoc/MCP2515-Stand-Alone-CAN-Controller-with-SPI-20001801J.pdf). A variável *wMode* guarda o valor a ser gravado no registro *CANCRL*, se este valor já estiver configurado, e a função for chamada, o MCP2515 é setado para o modo de configuração, no qual se pode alterar registros 'protegidos'. Se o MCP2515 estiver no modo de configuração, a função retorna ao modo *wMode*.
 
 Exemplo de uso:
-```C++
 
+Configurando o MCP2515 para *Listen-Only*.
+```C++
+mcp.wMode = 0x60;    
+mcp.confMode();
 ```
+> Na primeira linha é atribuído o valor 0x60 na variável de controle *wMode*, este valor é escrito no registro 0x0F do MCP2515, setando o controlador para modo *Listen-Only*. O valor padrão de *wMode* é 0x00, modo *Normal* do MCP2515.
+
+
+
+### Configuração dos buffers de entrada
+
+<div id='MCP_fun_confRX'/>  
 
 
 * `mcp.confRX();`<br/>
@@ -622,6 +629,12 @@ Exemplo de uso:
 
 ```
 
+
+
+### Configuração dos buffers de sáida
+
+<div id='MCP_fun_confTX'/>  
+
 * `mcp.confTX();`<br/>
 
 Parâmetros de entrada:
@@ -634,6 +647,10 @@ Exemplo de uso:
 
 ```
 
+
+### Configuração das interrrupções
+
+<div id='MCP_fun_confINT'/>  
 
 * `mcp.confINT();`<br/>
 
@@ -648,6 +665,9 @@ Exemplo de uso:
 ```
 
 
+### Configuração dos Filtros e Mascaras
+
+<div id='MCP_fun_confFM'/>  
 
 * `mcp.confFM();`<br/>
 
@@ -661,6 +681,9 @@ Exemplo de uso:
 
 ```
 
+### Configuração da Taxas de bits por segundo
+
+<div id='MCP_fun_confCAN'/>  
 
 * `mcp.confCAN();`<br/>
 
