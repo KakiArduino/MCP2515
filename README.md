@@ -691,7 +691,8 @@ mcp.confFM();
 > Neste exemplo as mascaras e filtros são setados através da atribuição das variáveis de configuração relacionadas, no caso especifico o MCP2515 só aceitara frames padrão, cujo valor do ID padrão seja maior que 0x400.
 > Mais detalhes do funcionamento dos filtros e mascaras do controlador CAN podem ser vistas no [datasheet](http://ww1.microchip.com/downloads/en/DeviceDoc/MCP2515-Stand-Alone-CAN-Controller-with-SPI-20001801J.pdf).
 
-### Configuração da Taxas de bits por segundo
+
+### Configuração da Taxa de transmisção de bits
 
 <div id='MCP_fun_confCAN'/>  
 
@@ -708,124 +709,251 @@ mcp.confCAN();
 > Também é atribuído, na segunda linha, o valor da variável de configuração *bitF*, que contem a taxa de transferência de bits utilizada no barramento CAN.
 > Na última linha é chamada a função *confCAN()*, que realiza a configuração dos registros 0x2A, 0x29 e 0x28, os valores gravados podem ser consultados respectivamente, após a função *confCAN()*, nas variáveis de configuração CNF1, CNF2 e CNF3.
 
+
 ### Status
 
 <div id='MCP_fun_status'/>  
 
 * `mcp.status(uint8_t *status);`<br/>
+A função *status(...)* realiza a leitura do byte de valvo no registro *status* do MCP2515 e salva no endereço indicado pelo parametro de entrada *status*, que deve ter o tamanho de um byte. O valor retornado pela função status(...) indica o status de funções de envio e recebimento.
+
 
 Parâmetros de entrada:
-1. ** **:
-2. ** **:
-3. ** **:
+1. **status**: é o ponteiro que indica a posição a ser salvo o byte lido pela função *status(...)*. Aconselha-se usar uma lista de uma posição, como no exemplo.
 
 Exemplo de uso:
+
 ```C++
-
+uint8_t status[1];
+mcp.status(status);
+Serial.println(status[0]);
 ```
+> Leitura e impressão do status do MCP2515.
 
+
+### Contador de erros
+
+<div id='MCP_fun_errCont'/>  
 
 * `mcp.errCont();`<br/>
+A função *errCont()* realiza a leitura dos registros relacionados a contagem de erros, *TEC* (0x1C) e *REC* (0x1D), e verifica a ocorrência de overflow nos buffers de entrada, lendo o registro de sinalização de erros (0x2D).
+As leituras são atualizadas nas variáveis, *TEC*, *REC*, *RX0OVR*, *RX1OVR*, *MERRF*, *WAKIE*, *multInt* e *errMode*.
+Uma descrição destas variáveis está disponível [Erros](#MCP_var_erros).
 
-Parâmetros de entrada:
-1. ** **:
-2. ** **:
-3. ** **:
 
 Exemplo de uso:
 ```C++
-
+mcp.errCont();
+Serial.println(mcp.TEC);
+Serial.println(mcp.errMode);
 ```
+> Neste exemplo é consultado o valor do contador de erros de transmissão do MCP2515 (*TEC*), e o modo do confinamento por erro.
+> A execução da função *errCont()*, atualiza as variáveis dos contadores de erros.
+            
 
+
+### Escrita de ID
+
+<div id='MCP_fun_writeID'/>  
 
 * `writeID(uint16_t sid, uint8_t id_ef = 0, uint32_t eid = 0, uint8_t txb = 0, uint8_t timeOut = 10, uint8_t check = 0);`<br/>
+A função *writeID(...)* realiza a escrita do identificador da mensagem *ID* no buffer de saída indicado por *txb*.
+No caso de haver mensagem pendente de transmissão, a função não irá sobrepor o ID da mensagem pendente, ela tentará repetidamente até conseguir escrever o ID ou até esgotar o tempo *timeOut* fornecido em milissegundos.
+
 
 Parâmetros de entrada:
-1. ** **:
-2. ** **:
-3. ** **:
+1. **sid**: é uma variável de dois bytes, nela é informado o valor do ID padrão. O maior valor possível é 0x3FF.
+2. **id_ef**: é a *flag* de extensão de ID, e deve ser informado 0 para ID padrão e 1 para ID com extensão. Por padrão essa variável vale 0.
+3. **eid**: é uma word de 32 bits que contém a extensão identificação (ID) da mensagem a ser enviada. Por padrão essa variável vale 0. O maior valor possível é 0x3FFFF.
+4. **txb**: indica o buffer no qual pretende-se escrever o ID, se fornecido 0 o ID é escrito no *TXB0*, se 1 é escrito no *TXB1*, se 2 é escrito no *TXB2*, se for fornecido 3 o mesmo ID é escrito nos três buffers de saída. Por padrão essa variável vale 0.
+5. **timeOut**: é o tempo (em milissegundos) limite para que a função consiga escrever no ID. Se o buffer escolhido permanecer ocupado durante todo o timeOut a função retornará sem escrever o ID. É esperado por padrão 10 milissegundos.
+6. **check**: é a sinalização de checagem de escrita, quando fornecido 1 a checagem é feita, se fornecido 0 ela não é feita. Por padrão a checagem é feita.
 
 Exemplo de uso:
+
+Setando um ID padrão e uma extensão de ID no buffer de saída *TXB0*.
 ```C++
-
+uint16_t IDstd = 0x700;
+uint32_t IDext = 0x30000;
+mcp.writeID(IDstd, 1, IDext);
 ```
+> Neste exemplo o ID padrão 0x700 e a extensão de ID 0x30000 são escritos no buffer de saída *TXB0*, com os valores padrões de time out e checagem.
 
+Escrevendo o ID padrão 10 em um buffer de saída, com time out desabilitado.
+```C++
+mcp.writeID(10, 0, 0, 1, 0);
+```
+> Desta vez, o ID padrão escrito no buffer de saída TXB1 o valor 10, sem extensão de ID e sem time out.
+
+
+### Carregar os registros dos sáida 
+
+<div id='MCP_fun_loadtx'/>  
 
 * `mcp.loadTX(uint8_t *data, uint8_t n = 8,  uint8_t abc = 1);`<br/>
+A função *loadTX(...)* realiza a escrita sequencial dos *n* bytes armazenados na lista indicada por *data*, nos *n* registros sequenciais dos buffers de saída do MCP2515, começando pelo registro indicado pelo código abc (de 0 à 5).
+Se fornecido 0 para abc a escrita começa do registro 0x31, se fornecido 1 começa do 0x36, se se fornecido 2 começa do 0x41, se se fornecido 3 começa do 0x46, se *abc = 4* a começa do 0x51 e se *abc = 5* a começa do 0x56.
 
 Parâmetros de entrada:
-1. ** **:
-2. ** **:
-3. ** **:
+1. **data**: é o endereço da lista que armazena os n bytes a serem escritos nos buffers.
+2. **n**: é o número de bytes a serem escritos.
+3. **abc**: é o código que marca o registro de partida da escrita sequencial.
 
-Exemplo de uso:
+Exemplo de uso: 
+
+Escrita sequencial com a função \textbf{loadTX(...)}.
 ```C++
-
+uint8_t data = {0, 2, 1, 3, 4, 5, 6, 7};
+mcp.loadTX(data, 8, 1);
 ```
+> Neste exemplo a sequencia de 8 bytes armazenada na lista data é sequencialmente escrita nos registros que armazenam os dados da mensagem a ser enviada pelo buffer TXB0 (do 0x36 até o 0xD).
 
 
-* `mcp.send(uint8_t);`<br/>
+### Função de envio
+
+<div id='MCP_fun_loadtx'/>  
+
+* `mcp.send(uint8_t txBuff = 0x01);`<br/>
+A função *send(...)* realiza o pedido de transmissão da mensagem armazenada no buffer ou buffers indicados por *txBuff*. Se *txBuff = 1*, será pedido o envio da mensagem salva no buffer *TXB0*, se *txBuff = 2* o pedido será para o *TXB1*, se *txBuff = 3* o pedido será para os buffers *TXB0* e *TXB1*, se *txBuff = 4* o pedido será para o *TXB2*, se *txBuff = 5* o pedido será para os buffers *TXB0* e *TXB2*, se *txBuff = 6* o pedido será para os buffers *TXB1* e *TXB2*, e se *txBuff = 7* o pedido será para os todos os buffers de saída. Quando for solicitado o envio de mais de uma mensagem, será primeiro enviado a armazenada no buffer mais prioritário.
+
 
 Parâmetros de entrada:
-1. ** **:
-2. ** **:
-3. ** **:
+1. **txBuff**: é o código de pedido de transmissão, seu valor vai de 1 a 7.
 
 Exemplo de uso:
-```C++
 
+Solicitação de envio da mensagem salva no buffer de transmissão *TXB2*.
+```C++
+mcp.send(0x04);
 ```
 
+### Envio de Frames
+
+<div id='MCP_fun_writeFrame'/>  
 
 * `writeFrame(CANframe frameToSend, uint8_t txb_ = 0, uint8_t timeOut = 10, uint8_t check = 0)`<br/>
+A função *writeFrame(...)* realiza a escrita de um frame, indicado por *frameToSend*, no buffer informado por *txb_* (0, 1 ou 2).
+A função *writeFrame(...)* tentará escrever repetidamente até conseguir, ou até que acaba o tempo limite de execução indicado em timeOut.
 
 Parâmetros de entrada:
-1. ** **:
-2. ** **:
-3. ** **:
+1. **frameToSend**: é o frame a ser enviado. Essa variável contém todas informações do frame, ver seção [Frames](#frames_var).
+2. **txb_**: indica o buffer de saída no qual pretende escrever os dados. Para *TXB0* deve ser fornecido 0, para *TXB1* 1 e para *TXB2* 2.
+3. **timeOut**: é o tempo máximo de execução da função, a *writeFrame(...)* tentará escrever no buffer escolhido até que este esteja desocupada e possa receber a nova mensagem, ou até que acabe o tempo de execução máximo (time out) fornecido. *timeOut* é expresso em milissegundos é vale, por padrão, 10 milissegundos.
+4. **check**: é a sinalização de checagem de escrita, se for fornecido 1 ela será feita, se for fornecido 0 não. A checagem custa tempo de execução, que não é incrementado no *timeOut*, e por padrão ela é feita.
 
-Exemplo de uso:
+Exemplos de uso:
+
+Envio de um frame com os bytes de uma leitura analógica.
 ```C++
-
+uint16_t ID_std = random(0x7FF);
+uint32_t ID_ext = random(0x3FFFF);
+UNION_t Data;
+Data.INT = analogRead(A0);
+CANframe frm(ID_std, sizeof(Data), Data.bytes);              
+mcp.writeFrame(frm);
 ```
+
+Envio de um frame com os bytes de um variável do tipo float pelo buffer de saída *TXB2*. 
+```C++
+UNION_t Data;
+Data.FLT = analogRead(A0)*(5.0 / 1023);
+frm.reload(sizeof(Data.FLT), Data.bytes);
+mcp.writeFrame(frm, 2);
+```
+> Neste exemplo o frame (frm) foi apenas atualizado com um novo dado, dessa forma os valores de ID, não são alterados.
+
+
+### Cancelar o envio de frames
+
+<div id='MCP_fun_abort'/>  
 
 * `mcp.abort(uint8_t abortCode = 7);`<br/>
+A função *abort(abortCode)* cancela o envio de frames.
 
 Parâmetros de entrada:
-1. ** **:
-2. ** **:
-3. ** **:
+1. **abortCode**: é o código de cancelamento de envio, seu valor pode ser 1, 2, 4 ou 7, e por padrão é 7 que aborta todos os envios pendentes nos buffer de saída.
 
-Exemplo de uso:
+
+Exemplos de uso:
+
+Cancelamento do envio da mensagem salva no buffer de saída *TXB2*.
 ```C++
-
+mcp.abort(4);
 ```
+
+Cancelamento do envio de todas mensagem salvas nos buffers de saída.
+```C++
+mcp.abort();
+```
+
+
+
+### Leitura de ID
+
+<div id='MCP_fun_readID'/> 
 
 * `mcp.readID(uint8_t *id, uint8_t rxb = 0);`<br/>
+A função *readID(...)* faz a leitura do ID padrão, e caso haja da extensão, de uma mensagem armazenada no buffer de entrada *rxb*. Os 5 bytes do (ID padrão + extensão de ID) lidos, dois para o ID padrão e três para extensão, são salvos byte a byte na lista indicada pelo endereço *id*.
+A função *readID(...)* é capaz de ler tanto o ID padrão quanto o estendido, e a princípio não é sabido o formato do ID, por isso deve-se sempre reservar uma lista de 5 bytes.
 
 Parâmetros de entrada:
-1. ** **:
-2. ** **:
-3. ** **:
+1. **id**: é o endereço da lista onde serão armazenados os bytes do ID. Deve ser um lista de 5 bytes.
+2. **rxb**: indica o buffer a ser lido, se fornecido 0 é lido o *RXB0*, se fornecido 1 é lido *RXB1*.
 
 Exemplo de uso:
-```C++
 
+Leitura, reconstrução e impressão do ID padrão e da extensão salvas no RXB1.
+```C++
+uint8_t ID[5];
+mcp.readID(ID, 1);
+
+IDunion_t IDstd, IDext;
+
+IDstd.bytes[0] = ID[0];
+IDstd.bytes[1] = ID[1];
+
+IDext.bytes[0] = ID[2];
+IDext.bytes[1] = ID[3];
+IDext.bytes[2] = ID[4];
+IDext.bytes[3] = 0;
+
+Serial.print(IDstd);
+Serial.print(' ');
+Serial.println(IDext);
 ```
+
+### Leitura de ID
+
+<div id='MCP_fun_readFrame'/> 
 
 * `mcp.readFrame()`<br/>
-
-Parâmetros de entrada:
-1. ** **:
-2. ** **:
-3. ** **:
+A função *readFrame(...)* realiza a leitura dos buffers de entrada *RXB0* e *RXB1*, e caso haja mensagem valida a salva nos frames auto declarados *frameRXB0* e *frameRXB1*, respectivamente. Os frames são declarados automaticamente na criação de um objeto MCP2515. Antes da leitura a função verifica se ha mensagem valida em um dos buffers de entrada, e caso haja realiza a leitura da mensagem, se não houver a função *readFrame(...)* atualiza o valor *type* do frame respectivo para "No frame". Podem haver mensagens validas nos dois buffers e neste caso a função *readFrame(...)* atualizará ambos frames.
 
 Exemplo de uso:
 ```C++
+mcp.readFrame();
+               
+if(frameRXB0.type != "No frame"){
+Serial.println("Frame recebido pelo RXB0");
+Serial.print(frameRXB0.id_std);
+Serial.print(' ');
+Serial.print(frameRXB0.id_ext);
+Serial.print(' ');
+Serial.print(frameRXB0.dlc);
 
+for(int i=0; i < frameRXB0.dlc; i++){
+    Serial.print(' ');
+    Serial.print(frameRXB0.data[i]);
+}
+Serial.println();
+               }
 ```
+> O processo feito para impressão do RXB0, a partir do *if(...)*, pode ser feito para o *RXB1*, trocando o *frameRXB0* por *frameRXB1*.
 
 
+### Função figaOi
+
+<div id='MCP_fun_Oi'/> 
 
 * `mcp.digaOi(char *oi);`<br/>
 
