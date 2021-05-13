@@ -293,6 +293,7 @@ Está variável salva o valor grava no registro 0x2A do MCP2515, ele faz parte d
 Há algumas opções pré definidas, estas podem ser configuradas atribuindo valores as variáveis *crystalCLK* e *bitF*, e dessa forma as variáveis *CNF1*, *CNF2* e *CNF3* são atualizadas durante a inicialização feita pela função *begin()* ou pela função de configuração específica, *confCAN()*.
 
 <div id='crystal_pre'/>  
+
 Os casos pré-definidos são: 
 1. *crystalCLK* = 4: com duas possíveis taxas 125 k bit/s e 250 k bit/s.
 
@@ -460,6 +461,7 @@ Parâmetros de entrada:
 3. **n**: é o número de registros a serem lidos, contando a partir do *REG*, por padrão *n =1*, logo se não alterado a função *read(..)* lerá apenas um registro.
 
 Exemplos de uso:
+
 Leitura do registro TEC do MCP2515.
 ```C++
 uint8_t data[1];
@@ -475,21 +477,49 @@ mcp.read(0x61, data, 2);
 > Neste exemplo foi primeiro declaro uma lista com 13 bytes, e na sequencia é realizado a leitura dos 13 registros do buffer de entrada *RB1* do MCP2515.
 
 
-### Chegarem de valor em registros
+### Verificação de valor em registros
 
 <div id='MCP_fun_regCheck'/>  
 
 * `mcp.regCheck(uint8_t REG, uint8_t VAL, uint8_t extraMask = 0xFF);`<br/>
 
+A função *regCheck(...)* confere se o byte salvo no registro *REG* é igual ao byte *VAL*, se for a função retorna 0, se não ela retorna 1. Se não for possível escrever no registro *REG* a função retorna 2.
+Pode-se usar essa função também para verificar o valor de um ou mais bits do byte armazenado em *REG*, para isso deve-se informar a mascara (*extraMask*) capaz de selecionar os bits desejados pela operação lógica *&* (and).
+Essa função pode ser chamada em conjunto com a função *write(...)*, de modo que seja feita uma verificação do sucesso da escrita no registro.
+A seguir a descrição dos parâmetros de entrada da função *regCheck(...)* e dois exemplos de uso, sem e com mascara de seleção de bits.
+
 Parâmetros de entrada:
-1. ** **:
-2. ** **:
-3. ** **:
+1. **REG**:  é o endereço do registro do MCP2515 a ser verificado. Deve ter um tamanho de 1 byte e seu valor vai 0x0 (0) até 0x80 (128).
+2. **VAL**:  é o byte que se deseja verificar em *REG*.
+3. **extraMask**:  é uma mascara de 1 byte, para selecionar os bits desejados pela operação logica *&* (and). Por padrão *extraMask = 0xFF*, logo por padrão a verificação é feita sobre todos os bits.
 
-Exemplo de uso:
+Exemplos de uso:
+
+Verificação do registro TEC do MCP2515.
 ```C++
-
+uint8_t check = 0;
+check = mcp.regCheck(0x1C, 0);
+if(check =! 0){
+  Serial.println("TEC > 0");
+}
 ```
+> Neste exemplo primeiro é declaro a variável check para armazenar o retorno da função *regCheck(...)*.
+> Depois é chamada a função *regCheck(0x1C, 0)*, que verificará se o valor salvo no registro *0x1C* é 0.
+> O registro *0x1C* armazena a contagem dos erros de transmissão (TEC) do MCP2515.
+> O valor retornado pela função *regCheck(...)* e salvo na variável check é comparado com 0, se ele for diferente de zero, significa que TEC possui um valor maior que zero, e ao menos um erro de transmissão foi detectado.
+
+Verificando se o MCP2515 está em modo de configuração.
+```C++
+uint8_t check = 0;
+check = mcp.regCheck(0x0F, 0x80, 0xE0);
+if(check == 0){
+    //realizar as configuração desejadas aqui.
+}
+```
+> Dessa vez a função *regCheck(...)* é usado com mascara, para verificar se o MCP2515 está no modo de configuração.
+> O código do modo de operação é armazenado nos três bits mais significantes do registro 0x0F, por isso o uso da mascara 0xE0. 
+> Se o MCP2515 estiver no modo de configuração o valor do registro 0x0F, após aplicação da mascara 0xE0, deve ser 0x80.
+
 
 * `mcp.write(uint8_t REG, uint8_t VAL, uint8_t CHECK = 1);`<br/>
 
