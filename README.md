@@ -223,9 +223,9 @@ Modo de operação da comunicação SPI entre o Arduino e o MCP2515, o controlad
  * `uint8_t SPI_cs;`<br/>
 Número do pino do Arduino usado como *chip select* na comunicação SPI entre o Arduino e o MCP2515.
 
-<div id='MCP_var_conf'/>  
-
 ### Configurações gerais do MCP2515
+
+<div id='MCP_var_conf'/>  
 
  * `uint8_t crystalCLK = 8;`<br/>
 Frequência do oscilador que fornece a base de clock para o MCP2515, em mega hertz (M Hz).
@@ -295,31 +295,63 @@ Sua configuração segue de forma análoga a da varaiável *CNF1*.
 Sua configuração segue de forma análoga a da varaiável *CNF1*.
 
 
+### Filtros e Mascaras
 
 <div id='MCP_var_filMask'/>  
 
-### Filtros e Mascaras
+* `uint16_t MASstd[2] = {0x00, 0x00};`<br/>
+Lista com os valores dos ID padrões das mascaras 0 (*MASstd[0]*) e 1 (*MASstd[1]*) do MCP2515.
+    
+* `uint32_t MASext[2] = {0x00, 0x00};`<br/>
+Lista com os valores das extensões de ID das mascaras 0 (*MASext[0]*) e 1 (*MASext[1]*) do MCP2515.
+    
+* `uint16_t FILstd[6] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00};`<br/>
+Lista com os valores de ID padrão dos filtros do MCP2515, *FILstd[0]* corresponde ao filtro 0, e assim por diate, até *FILstd[6]* que correnponde ao filtro 6.
+    
+* `uint32_t FILext[6] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00};`<br/>
+Lista com os valores das extensões de ID dos filtros do MCP2515, *FILext[0]* corresponde ao filtro 0, e assim por diate, até *FILext[6]* que correnponde ao filtro 6.
 
-
-
-
-
-
-<div id='MCP_var_erros'/>  
 
 ### Erros
 
+<div id='MCP_var_erros'/>  
 
+* `String errLog = "no error";`<br/>
+Armazena o último erro genérico ocorrido. Pode-se atualizar o valor de *errLog* chamando a função *errCont()*.
+    
+* `String errMode = "Error Active";`<br/>
+Armazena o modo de confinamento de erro,  "Error Active", "Error Passive" ou "Bus-Off". Pode-se atualizar o valor de *errMode* chamando a função *errCont()*.
+    
+* `uint16_t RX0OVR = 0;`<br/>
+Armazena o número de *overload* no buffer *RXB0*. Pode-se atualizar o valor de *RX0OVR8 chamando a função *errCont()*.
 
+* `uint16_t RX1OVR = 0;`<br/>
+Armazena o número de \textit{overload} no buffer *RXB1*. Pode-se atualizar o valor de *RX1OVR* chamando a função *errCont()*.
+        
+* `uint8_t multInt = 0;`<br/>
+Armazena o número de erros de multiplicas fontes detectados, indicados pelo registro *ERROR FLAG REGISTER* (0x2D).Pode-se atualizar o valor de \textit{multInt} chamando a função *errCont()*.
+    
+* `uint8_t  MERRF = 0;`<br/>
+Armazena o número de erros de mensagens detectados. Pode-se atualizar o valor de *MERRF* chamando a função *errCont()*.
+        
+* `uint8_t  WAKIE;`<br/>
+Armazena o valor da \textit{Wake-up flag} de MCP2515. Pode-se atualizar o valor de *WAKIE* chamando a função *errCont()*.
+    
+* `uint8_t TEC = 0;`<br/>
+Armazena o valor do contador de erros de transmissão TEC. Pode-se atualizar o valor de *TEC* chamando a função *errCont()*.
+    
+* `uint8_t REC = 0;`<br/>
+Armazena o valor do contador de erros de transmissão REC. Pode-se atualizar o valor de *REC* chamando a função *errCont()*.
 
-<div id='MCP_var_frm'/>  
 
 ### Frames
 
+<div id='MCP_var_frm'/>  
 
-<div id='MCP_fun'/>  
 
 ## Funções públicas
+
+<div id='MCP_fun'/>  
 
 * ` `<br/>
 
