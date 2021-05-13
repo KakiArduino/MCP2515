@@ -348,6 +348,11 @@ Armazena o valor do contador de erros de transmissão REC. Pode-se atualizar o v
 
 <div id='MCP_var_frm'/>  
 
+* `CANframe frameRXB0;`<br/>
+Variável do tipo *CANframe*, criada para receber os frames recebidos no buffer *RXB0*. Pode-se atualizar o valor de *frameRXB0* chamando a função *readFrame()*.
+        
+* `CANframe frameRXB1;`<br/>
+Variável do tipo *CANframe*, criada para receber os frames recebidos no buffer *RXB1*. Pode-se atualizar o valor de *frameRXB1* chamando a função *readFrame()*.
 
 ## Funções públicas
 
