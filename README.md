@@ -177,7 +177,7 @@ Função para criação de frames padrões, devem ser informados o ID padrão, o
 
 Parâmetros de entrada:
 1. **idstd**: variável de 2 bytes onde deve ser informado o valor do ID padrão do frame, no máximo 0x7FF.
-2. **dlc_**: número de \textit{bytes} de dados.
+2. **dlc_**: número de bytes de dados.
 3. **data**:  lista contendo os bytes de dados dos frames.
 
 Exemplo de uso:
@@ -210,7 +210,7 @@ Função para recarregar o campo de dados de frame qualquer, essa função não 
 Essa função pode ser usada em um loop, onde os dados do frame são atualizados periodicamente, mas seus valores de ID não.
 
 Parâmetros de entrada:
-1. **dlc_**: número de \textit{bytes} de dados.
+1. **dlc_**: número de bytes de dados.
 2. **data_**:  lista contendo os bytes de dados dos frames.
 
 Exemplo de uso:
@@ -286,7 +286,7 @@ O valor padrão 0x0F no registro 0x0C configura os pinos do MCP2515, o *RX0BF* �
     
 * `uint8_t TXRTSCTRL = 0x00;`<br/>
 Está variável manipula o registro 0x0D do MCP2515.
-O valor padrão \textit{0x00} não habilita nenhum interrupção com relação os pinos TX0RTS, TX1RTS e TX2RTS.        
+O valor padrão 0x00 não habilita nenhum interrupção com relação os pinos TX0RTS, TX1RTS e TX2RTS.        
         
 * `uint8_t CNF1 = 0x00;`<br/>
 Está variável salva o valor grava no registro 0x2A do MCP2515, ele faz parte da configuração do Bit-Timing.
@@ -343,16 +343,16 @@ Armazena o modo de confinamento de erro,  "Error Active", "Error Passive" ou "Bu
 Armazena o número de *overload* no buffer *RXB0*. Pode-se atualizar o valor de *RX0OVR8 chamando a função *errCont()*.
 
 * `uint16_t RX1OVR = 0;`<br/>
-Armazena o número de \textit{overload} no buffer *RXB1*. Pode-se atualizar o valor de *RX1OVR* chamando a função *errCont()*.
+Armazena o número de overloads no buffer *RXB1*. Pode-se atualizar o valor de *RX1OVR* chamando a função *errCont()*.
         
 * `uint8_t multInt = 0;`<br/>
-Armazena o número de erros de multiplicas fontes detectados, indicados pelo registro *ERROR FLAG REGISTER* (0x2D).Pode-se atualizar o valor de \textit{multInt} chamando a função *errCont()*.
+Armazena o número de erros de multiplicas fontes detectados, indicados pelo registro *ERROR FLAG REGISTER* (0x2D).Pode-se atualizar o valor de *multInt* chamando a função *errCont()*.
     
 * `uint8_t  MERRF = 0;`<br/>
 Armazena o número de erros de mensagens detectados. Pode-se atualizar o valor de *MERRF* chamando a função *errCont()*.
         
 * `uint8_t  WAKIE;`<br/>
-Armazena o valor da \textit{Wake-up flag} de MCP2515. Pode-se atualizar o valor de *WAKIE* chamando a função *errCont()*.
+Armazena o valor da *Wake-up flag* de MCP2515. Pode-se atualizar o valor de *WAKIE* chamando a função *errCont()*.
     
 * `uint8_t TEC = 0;`<br/>
 Armazena o valor do contador de erros de transmissão TEC. Pode-se atualizar o valor de *TEC* chamando a função *errCont()*.
@@ -386,13 +386,13 @@ Todos os parâmetros de entrada da função *MCP2515(...)* são relacionados a c
 
 Parâmetros de entrada:
 1. **spi_cs**:  é o número do pino do Arduino usado como *chip select* do MCP2515.
-2. **spi_speed**:  é a máxima frequência do \textit{clock} da comunicação SPI, seu valor padrão é 10000000.
->  Obs.: Esse é o valor máximo suportado pelo MCP2515 e serve apenas como limite superior, a frequência do \textit{clock} é setada automaticamente pelo Arduino, dentro do limite informado.
+2. **spi_speed**:  é a máxima frequência do clock da comunicação SPI, seu valor padrão é 10000000.
+>  Obs.: Esse é o valor máximo suportado pelo MCP2515 e serve apenas como limite superior, a frequência do clock é setada automaticamente pelo Arduino, dentro do limite informado.
 3. **spi_wMode**: indica o modo de operação do SPI, o MCP2515 suporta o modo [0,0] e o modo [1, 1], que equivalem respectivamente, o modo 0 e  ao modo 3 do Arduino ([SPI - Arduino](https://www.arduino.cc/en/reference/SPI)). O valor padrão é 0.
 
 Exemplos de uso:
 
-Declaração de um objeto \textit{MCP2515}.
+Declaração de um objeto MCP2515.
 ```C++
 #include <MCP2515_1.h>
 MCP2515 mon(4);
@@ -400,7 +400,7 @@ MCP2515 mon(4);
 > Neste exemplo foi, na primeira linha, incluído a versão 1 da biblioteca MCP2515, através do arquivo [MCP2515_1](https://github.com/KakiArduino/MCP2515). 
 > Na segunda linha foi declarado um objeto *MCP2515* chamado *mon*, que tem como *chip select* o pino digital 4 do Arduino.
 
-Outro exemplo de declaração de objeto \textit{MCP2515}.
+Outro exemplo de declaração de objeto MCP2515.
 ```C++
 MCP2515 mcp(7, 10000000, 3);
 ```
@@ -425,7 +425,7 @@ void setup() {
   mon.bitF = 125; // k bits/s
   mon.begin();
 ```
-> Na penúltima linha é setado a taxa de bits para 125 k bit/s, \textbf{bitF} é a variável de controle que armazena o valor da taxa \textit{bits}. 
+> Na penúltima linha é setado a taxa de bits para 125 k bit/s, *bitF* é a variável de controle que armazena o valor da taxa bits. 
 > Na última o MCP2515 é inicializado e configurado com a função *mon.begin()*.
 
 Configuração padrão.
@@ -435,7 +435,7 @@ sensor.begin();
 > Neste exemplo o MCP2515 é inicializado e configurado no modo padrão, *sensor* é o nome do objeto.
 
 
-# Reset 
+### Reset 
 
 <div id='MCP_fun_mcp'/>  
 
@@ -445,28 +445,39 @@ A função *reset()* não possui argumentos, ela reinicia o CI MCP2515 enviando 
 Atenção ao voltar do reset o CI MCP2515 se encontra em modo de configuração e com valores padrão nos registros, e deve-se esperar algo entorno de 2 micro secondos antes de usa-lo ([datasheet](http://ww1.microchip.com/downloads/en/DeviceDoc/MCP2515-Stand-Alone-CAN-Controller-with-SPI-20001801J.pdf)), isso pode ser feito através da função [**delayMicroseconds()**](https://www.arduino.cc/reference/en/language/functions/time/delaymicroseconds/) do Arduino.
 É aconselhável o uso dessa função logo após a inicialização do CI, e antes de configurá-lo, pois assim tem-se certeza dos valores salvos em seus registros.
 
-Parâmetros de entrada:
-1. ** **:
-2. ** **:
-3. ** **:
+### Read
 
-Exemplo de uso:
-```C++
-
-```
-
+<div id='MCP_fun_read'/>  
 
 * `mcp.read(uint8_t REG, uint8_t *data, uint8_t n = 1);`<br/>
+A função *read(...)* realiza *n* (de 1 à 128) leituras sequencias de registros do MCP2515, a partir do registro *REG* informado, e aloca os *n* bytes em uma lista previamente criada e indicada pelo endereço *data*,  a lista *data* deve ter o tamanho de *n* *bytes*.
+Abaixo segue a descrição dos parâmetros de entradas da função *read(...)*, e na sequencia dois exemplos, um lendo um registro e o outro lendo *13* registros.
+
 
 Parâmetros de entrada:
-1. ** **:
-2. ** **:
-3. ** **:
+1. **REG**: é o endereço do primeiro registro do MCP2515 a ser lido, deve ter um tamanho de 1 byte e seu valor vai 0x0 (0) até 0x80 (128).
+2. **data**: é o endereço da lista criada para armazenamento dos valores lidos. A lista *data* deve ter o tamanho de *n* bytes.
+3. **n**: é o número de registros a serem lidos, contando a partir do *REG*, por padrão *n =1*, logo se não alterado a função *read(..)* lerá apenas um registro.
 
-Exemplo de uso:
+Exemplos de uso:
+Leitura do registro TEC do MCP2515.
 ```C++
-
+uint8_t data[1];
+mcp.read(0x1C, data);
 ```
+> Neste exemplo foi primeiro declaro uma lista (*data[1]*) com 1 byte e na sequencia é realizado a leitura do registro *0x1C*, que armazena a contagem de erro de transmissão (TEC) do MCP2515.
+
+Leitura do buffer de entrada *RXB1* do MCP2515.
+```C++
+uint8_t data[13];
+mcp.read(0x61, data, 2);
+```
+> Neste exemplo foi primeiro declaro uma lista com 13 bytes, e na sequencia é realizado a leitura dos 13 registros do buffer de entrada *RB1* do MCP2515.
+
+
+### Chegarem de valor em registros
+
+<div id='MCP_fun_regCheck'/>  
 
 * `mcp.regCheck(uint8_t REG, uint8_t VAL, uint8_t extraMask = 0xFF);`<br/>
 
